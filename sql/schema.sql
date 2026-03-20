@@ -62,6 +62,7 @@ CREATE TABLE hotel_phone(
 
 -- although room_number is called number in the relational schema diagram,
 -- this change was required to minimize confusion
+-- same thing applies for view which becomes view of room
 CREATE TABLE room(
 	hotel_id bigserial,
 	room_number integer CHECK(room_number BETWEEN 1 AND 1000),
@@ -71,3 +72,76 @@ CREATE TABLE room(
 	PRIMARY KEY(hotel_id,room_number),
 	FOREIGN KEY(hotel_id) REFERENCES hotel
 );
+
+CREATE TABLE room_view(
+	hotel_id bigserial,
+	room_number integer CHECK(room_number BETWEEN 1 AND 1000),
+	view_of_room varchar(10) CHECK(view_of_room='mountain' OR view_of_room='sea' OR view_of_room='none'),
+	PRIMARY KEY(hotel_id,room_number,view_of_room)
+	FOREIGN KEY(hotel_id) REFERENCES hotel,
+	FOREIGN KEY(room_number) REFERENCES room
+);
+
+CREATE TABLE room_problem(
+	hotel_id bigserial,
+	room_number integer CHECK(room_number BETWEEN 1 AND 1000),
+	problem varchar(100),
+	PRIMARY KEY(hotel_id,room_number,problem),
+	FOREIGN KEY(hotel_id) REFERENCES hotel,
+	FOREIGN KEY(room_number) REFERENCES room
+);
+
+CREATE TABLE room_amenity(
+	hotel_id bigserial,
+	room_number integer CHECK(room_number BETWEEN 1 AND 1000),
+	amenity varchar(100),
+	PRIMARY KEY(hotel_id,room_number,amenity),
+	FOREIGN KEY(hotel_id) REFERENCES hotel,
+	FOREIGN KEY(room_number) REFERENCES room	
+);
+
+-- registration related tables
+CREATE TABLE registration(
+	registration_id bigserial PRIMARY KEY,
+	start_date timestamp NOT NULL,
+	end_date timestamp NOT NULL,
+	is_archived boolean NOT NULL
+);
+
+CREATE TABLE registration_special_request(
+	registration_id bigserial,
+	special_request varchar(100),
+	PRIMARY KEY(registration_id,special_request),
+	FOREIGN KEY(registration_id) REFERENCES registration
+);
+
+CREATE TABLE booking(
+	registration_id bigserial PRIMARY KEY,
+	status varchar(20) NOT NULL,
+	booking_date timestamp NOT NULL,
+	FOREIGN KEY(registration_id) REFERENCES registration
+);
+
+CREATE TABLE renting(
+	registration_id bigserial PRIMARY KEY,
+	paid boolean NOT NULL,
+	renting_date timestamp NOT NULL,
+	FOREIGN KEY(registration_id) REFERENCES registration
+);
+
+-- employee related tables
+-- customer related tables
+
+-- "relationships"
+-- registration and room
+CREATE TABLE reg_room(
+	registration_id bigserial PRIMARY KEY,
+	hotel_id bigserial,
+	room_number integer CHECK(room_number BETWEEN 1 AND 1000),
+	FOREIGN KEY(registration_id) REFERENCES registration,
+	FOREIGN KEY(hotel_id) REFERENCES hotel,
+	FOREIGN KEY(room_number) REFERENCES room
+);
+
+-- registration and customer
+CREATE TABLE makes();
