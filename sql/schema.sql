@@ -192,8 +192,8 @@ CREATE TABLE reg_room(
 CREATE TABLE makes(
 	registration_id bigint PRIMARY KEY,
 	id_number bigint NOT NULL,
-	id_type varchar(3) CHECK (id_type='sin' OR id_type='ssn'),
-	FOREIGN KEY(registration_id) REFERENCES registration NOT NULL,
+	id_type varchar(3) NOT NULL CHECK (id_type='sin' OR id_type='ssn'),
+	FOREIGN KEY(registration_id) REFERENCES registration,
 	FOREIGN KEY(id_number,id_type) REFERENCES customer
 );
 
