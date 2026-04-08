@@ -75,7 +75,7 @@ CREATE TABLE room(
 	hotel_id bigint,
 	room_number integer CHECK(room_number BETWEEN 1 AND 1000),
 	price numeric(6,2) NOT NULL,
-	capacity varchar(10) NOT NULL CHECK(capacity='single' OR capacity='double' OR capacity='suite' OR capacity='family' OR capacity='royal' OR capacity='presidential'),
+	capacity varchar(10) NOT NULL CHECK(capacity='single' OR capacity='double' OR capacity='suite' OR capacity='family' OR capacity='royal' OR capacity='penthouse'),
 	extendable boolean NOT NULL,
 	PRIMARY KEY(hotel_id,room_number),
 	FOREIGN KEY(hotel_id) REFERENCES hotel
@@ -223,7 +223,7 @@ CREATE TABLE processes(
 	id_number bigint,
 	id_type varchar(3) CHECK (id_type='sin' OR id_type='ssn'),
 	registration_id bigint NOT NULL,
-	PRIMARY KEY(id_number,id_type),
+	PRIMARY KEY(id_number,id_type,registration_id),
 	FOREIGN KEY(id_number,id_type) REFERENCES employee,
 	FOREIGN KEY(registration_id) REFERENCES registration
 );
