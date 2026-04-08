@@ -41,7 +41,9 @@ For each table, **right-click > choose "Import/Export Data..." > click on "Impor
 11. `booking`, `renting`, `registration_special_request`
 12. `reg_room`, `makes`
 13. `works_at`, `supervises`, `processes`
+*If the script ran successfully, you should see two green success notifications in pgAdmin's message panel.*
 
 **Step 5: Run `reset_sequences.sql` in pgAdmin**
 
 Run `reset_sequences.sql` in the query tool so auto-increment counters continue from the correct value after the initial data load.
+*If the script ran successfully, you should see a green success notification in pgAdmin's message panel.*
