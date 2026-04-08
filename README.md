@@ -42,7 +42,7 @@ For each table, **right-click > choose "Import/Export Data..." > click on "Impor
 12. `reg_room`, `makes`
 13. `works_at`, `supervises`, `processes`
 
-*If the script ran successfully, you should see two green success notifications in pgAdmin's message panel each time you do the procedure, i.e. for every table.*
+*If the import was successful, you should see two green success notifications in pgAdmin's message panel for each table.*
 
 **Step 5: Run `reset_sequences.sql` in pgAdmin**
 
