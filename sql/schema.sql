@@ -11,6 +11,7 @@ CREATE TABLE hotel_chain(
 	chain_id numeric(1,0) CHECK(chain_id BETWEEN 1 AND 5) PRIMARY KEY,
 	chain_name varchar(100) NOT NULL,
 	street_number varchar(10) NOT NULL,
+	street_name varchar(50) NOT NULL,
 	city varchar(20) NOT NULL,
 	state_province varchar(50) NOT NULL,
 	zip_postal_code varchar(10) NOT NULL,
@@ -41,6 +42,7 @@ CREATE TABLE hotel(
 	hotel_name varchar(100) NOT NULL,
 	classification numeric(1,0) NOT NULL CHECK(classification BETWEEN 1 AND 5),
 	street_number varchar(10) NOT NULL,
+	street_name varchar(50) NOT NULL,
 	city varchar(20) NOT NULL,
 	state_province varchar(50) NOT NULL,
 	zip_postal_code varchar(10) NOT NULL,
@@ -73,7 +75,7 @@ CREATE TABLE room(
 	hotel_id bigint,
 	room_number integer CHECK(room_number BETWEEN 1 AND 1000),
 	price numeric(6,2) NOT NULL,
-	capacity varchar(10) NOT NULL CHECK(capacity='single' OR capacity='double' OR capacity='suite' OR capacity='family'),
+	capacity varchar(10) NOT NULL CHECK(capacity='single' OR capacity='double' OR capacity='suite' OR capacity='family' OR capacity='royal' OR capacity='presidential'),
 	extendable boolean NOT NULL,
 	PRIMARY KEY(hotel_id,room_number),
 	FOREIGN KEY(hotel_id) REFERENCES hotel
@@ -141,6 +143,7 @@ CREATE TABLE person(
 	middle_name varchar(100),
 	last_name varchar(100) NOT NULL,
 	street_number varchar(10) NOT NULL,
+	street_name varchar(50) NOT NULL,
 	city varchar(20) NOT NULL,
 	state_province varchar(50) NOT NULL,
 	zip_postal_code varchar(10) NOT NULL,
@@ -178,8 +181,8 @@ CREATE TABLE customer(
 -- registration and room
 CREATE TABLE reg_room(
 	registration_id bigint PRIMARY KEY,
-	hotel_id bigint,
-	room_number integer CHECK(room_number BETWEEN 1 AND 1000),
+	hotel_id bigint NOT NULL,
+	room_number integer CHECK(room_number BETWEEN 1 AND 1000) NOT NULL,
 	FOREIGN KEY(registration_id) REFERENCES registration,
 	FOREIGN KEY(hotel_id,room_number) REFERENCES room(hotel_id,room_number)
 );
@@ -188,9 +191,9 @@ CREATE TABLE reg_room(
 -- unlike the current schema diagram, the attributes for customer are not preceded by customer
 CREATE TABLE makes(
 	registration_id bigint PRIMARY KEY,
-	id_number bigint,
+	id_number bigint NOT NULL,
 	id_type varchar(3) CHECK (id_type='sin' OR id_type='ssn'),
-	FOREIGN KEY(registration_id) REFERENCES registration,
+	FOREIGN KEY(registration_id) REFERENCES registration NOT NULL,
 	FOREIGN KEY(id_number,id_type) REFERENCES customer
 );
 
@@ -198,7 +201,7 @@ CREATE TABLE makes(
 CREATE TABLE works_at(
 	id_number bigint,
 	id_type varchar(3) CHECK (id_type='sin' OR id_type='ssn'),
-	hotel_id bigint,
+	hotel_id bigint NOT NULL,
 	PRIMARY KEY(id_number,id_type),
 	FOREIGN KEY(id_number,id_type) REFERENCES employee,
 	FOREIGN KEY(hotel_id) REFERENCES hotel
@@ -219,7 +222,7 @@ CREATE TABLE supervises(
 CREATE TABLE processes(
 	id_number bigint,
 	id_type varchar(3) CHECK (id_type='sin' OR id_type='ssn'),
-	registration_id bigint,
+	registration_id bigint NOT NULL,
 	PRIMARY KEY(id_number,id_type),
 	FOREIGN KEY(id_number,id_type) REFERENCES employee,
 	FOREIGN KEY(registration_id) REFERENCES registration
