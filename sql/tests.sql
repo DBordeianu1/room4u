@@ -14,6 +14,8 @@ SELECT r.registration_id,r.is_archived,b.status FROM registration r JOIN booking
 UPDATE booking SET STATUS='cancelled' WHERE registration_id=3;
 SELECT r.registration_id,r.is_archived,b.status FROM registration r JOIN booking b ON r.registration_id=b.registration_id WHERE r.registration_id=3;
 
+
+
 ------ testing queries for trigger of user-defined constraint #14 (from deliverable 1, see triggers.sql)
 -- this insert should succeed
 INSERT INTO person(id_number,id_type,first_name,middle_name,last_name,street_number,street_name,city,state_province,zip_postal_code,country)

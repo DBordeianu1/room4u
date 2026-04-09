@@ -47,7 +47,7 @@ END;
 $body$ LANGUAGE plpgsql;
 
 CREATE TRIGGER number_of_managers
-AFTER DELETE OR INSERT
+AFTER INSERT OR DELETE
 ON employee
 FOR EACH ROW
 EXECUTE FUNCTION monitor_hotel_managers();
