@@ -18,7 +18,7 @@ db.password=your_password
 
 **Step 2: Run `excel_to_csv.py`**
 
-Which generates a CSV for each table under `sql/csv_files/`.
+It generates a CSV for each sheet in `hotelchains.xlsx` under `sql/csv_files/` **relative to where the command is run from**.
 
 **Step 3: Run `schema.sql` in pgAdmin**
 
