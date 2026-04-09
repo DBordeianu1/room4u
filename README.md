@@ -18,7 +18,7 @@ db.password=your_password
 
 **Step 2: Run `excel_to_csv.py`**
 
-It generates a CSV for each sheet in `hotelchains.xlsx` under `sql/csv_files/` **relative to where the command is run from**.
+You must run it under `sql/`: It generates a CSV for each sheet in `hotelchains.xlsx` under `sql/csv_files/`.
 
 **Step 3: Run `schema.sql` in pgAdmin**
 
@@ -26,7 +26,7 @@ Open your database in pgAdmin, open the query tool, and run `schema.sql` to crea
 
 **Step 4: Import CSVs via pgAdmin**
 
-For each table, **right-click > choose "Import/Export Data..." > click on "Import"**. Select the corresponding CSV from `sql/csv_files/`. Under the "Options" tab at the top, toggle `Header` on and set "Delimiter" to `,`. Import in the following order:
+For each table, **right-click > choose "Import/Export Data..." > click on "Import"**. Select the corresponding CSV from `sql/csv_files/`. Under the "Options" tab at the top, toggle "Header" on, and set "Delimiter" to `,`. Import in the following order:
 
 1. `hotel_chain`
 2. `hotel_chain_email`, `hotel_chain_phone`
