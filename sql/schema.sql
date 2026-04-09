@@ -23,7 +23,7 @@ CREATE TABLE hotel_chain_email(
 	email_address varchar(100) CHECK (email_address LIKE '_%@_%._%'),
 	email_type varchar(100),
 	PRIMARY KEY(chain_id,email_address,email_type),
-	FOREIGN KEY(chain_id) REFERENCES hotel_chain
+	FOREIGN KEY(chain_id) REFERENCES hotel_chain ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE hotel_chain_phone(
@@ -31,7 +31,7 @@ CREATE TABLE hotel_chain_phone(
 	phone_number varchar(25),
 	phone_type varchar(100),
 	PRIMARY KEY(chain_id,phone_number,phone_type),
-	FOREIGN KEY(chain_id) REFERENCES hotel_chain
+	FOREIGN KEY(chain_id) REFERENCES hotel_chain ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- hotel related tables
@@ -47,7 +47,7 @@ CREATE TABLE hotel(
 	state_province varchar(50) NOT NULL,
 	zip_postal_code varchar(10) NOT NULL,
 	country varchar(10) NOT NULL CHECK(country='canada' OR country='us'),
-	FOREIGN KEY(chain_id) REFERENCES hotel_chain
+	FOREIGN KEY(chain_id) REFERENCES hotel_chain ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE hotel_email(
@@ -55,7 +55,7 @@ CREATE TABLE hotel_email(
 	email_address varchar(100) CHECK (email_address LIKE '_%@_%._%'),
 	email_type varchar(100),
 	PRIMARY KEY(hotel_id,email_address,email_type),
-	FOREIGN KEY(hotel_id) REFERENCES hotel
+	FOREIGN KEY(hotel_id) REFERENCES hotel ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE hotel_phone(
@@ -63,7 +63,7 @@ CREATE TABLE hotel_phone(
 	phone_number varchar(25),
 	phone_type varchar(100),
 	PRIMARY KEY(hotel_id,phone_number,phone_type),
-	FOREIGN KEY(hotel_id) REFERENCES hotel
+	FOREIGN KEY(hotel_id) REFERENCES hotel ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- room related tables although they depend on hotel
@@ -78,7 +78,7 @@ CREATE TABLE room(
 	capacity varchar(10) NOT NULL CHECK(capacity='single' OR capacity='double' OR capacity='suite' OR capacity='family' OR capacity='royal' OR capacity='penthouse'),
 	extendable boolean NOT NULL,
 	PRIMARY KEY(hotel_id,room_number),
-	FOREIGN KEY(hotel_id) REFERENCES hotel
+	FOREIGN KEY(hotel_id) REFERENCES hotel ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE room_view(
@@ -86,7 +86,7 @@ CREATE TABLE room_view(
 	room_number integer CHECK(room_number BETWEEN 1 AND 1000),
 	view_of_room varchar(10) CHECK(view_of_room='mountain' OR view_of_room='sea' OR view_of_room='none'),
 	PRIMARY KEY(hotel_id,room_number,view_of_room),
-	FOREIGN KEY(hotel_id,room_number) REFERENCES room(hotel_id,room_number)
+	FOREIGN KEY(hotel_id,room_number) REFERENCES room(hotel_id,room_number) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE room_problem(
@@ -94,7 +94,7 @@ CREATE TABLE room_problem(
 	room_number integer CHECK(room_number BETWEEN 1 AND 1000),
 	problem varchar(100),
 	PRIMARY KEY(hotel_id,room_number,problem),
-	FOREIGN KEY(hotel_id,room_number) REFERENCES room(hotel_id,room_number)
+	FOREIGN KEY(hotel_id,room_number) REFERENCES room(hotel_id,room_number) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE room_amenity(
@@ -102,7 +102,7 @@ CREATE TABLE room_amenity(
 	room_number integer CHECK(room_number BETWEEN 1 AND 1000),
 	amenity varchar(100),
 	PRIMARY KEY(hotel_id,room_number,amenity),
-	FOREIGN KEY(hotel_id,room_number) REFERENCES room(hotel_id,room_number)	
+	FOREIGN KEY(hotel_id,room_number) REFERENCES room(hotel_id,room_number)	ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- registration related tables
@@ -118,21 +118,21 @@ CREATE TABLE registration_special_request(
 	registration_id bigint,
 	special_request varchar(100),
 	PRIMARY KEY(registration_id,special_request),
-	FOREIGN KEY(registration_id) REFERENCES registration
+	FOREIGN KEY(registration_id) REFERENCES registration ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE booking(
 	registration_id bigint PRIMARY KEY,
 	status varchar(20) NOT NULL CHECK(status='pending' OR status='cancelled' OR status='confirmed'),
 	booking_date timestamp NOT NULL,
-	FOREIGN KEY(registration_id) REFERENCES registration
+	FOREIGN KEY(registration_id) REFERENCES registration ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE renting(
 	registration_id bigint PRIMARY KEY,
 	paid boolean NOT NULL,
 	renting_date timestamp NOT NULL,
-	FOREIGN KEY(registration_id) REFERENCES registration
+	FOREIGN KEY(registration_id) REFERENCES registration ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 --person related tables
@@ -156,8 +156,8 @@ CREATE TABLE employee(
 	id_type varchar(3) CHECK (id_type='sin' OR id_type='ssn'),
 	hotel_id bigint,
 	PRIMARY KEY(id_number,id_type),
-	FOREIGN KEY(id_number,id_type) REFERENCES person,
-	FOREIGN KEY(hotel_id) REFERENCES hotel
+	FOREIGN KEY(id_number,id_type) REFERENCES person ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(hotel_id) REFERENCES hotel ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- role was changed to employee_role as it is perceived as a keyword in sql
@@ -166,7 +166,7 @@ CREATE TABLE employee_role(
 	id_type varchar(3) CHECK (id_type='sin' OR id_type='ssn'),
 	employee_role varchar(100),
 	PRIMARY KEY(id_number,id_type,employee_role),
-	FOREIGN KEY(id_number,id_type) REFERENCES employee
+	FOREIGN KEY(id_number,id_type) REFERENCES employee ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE customer(
@@ -174,27 +174,29 @@ CREATE TABLE customer(
 	id_type varchar(3) CHECK (id_type='sin' OR id_type='ssn'),
 	date_of_registration timestamp NOT NULL,
 	PRIMARY KEY(id_number,id_type),
-	FOREIGN KEY(id_number,id_type) REFERENCES person
+	FOREIGN KEY(id_number,id_type) REFERENCES person ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- "relationships"
 -- registration and room
+-- ON DELETE/UPDATE CASCADE since the info about registration still remains in the db
 CREATE TABLE reg_room(
 	registration_id bigint PRIMARY KEY,
 	hotel_id bigint NOT NULL,
 	room_number integer CHECK(room_number BETWEEN 1 AND 1000) NOT NULL,
-	FOREIGN KEY(registration_id) REFERENCES registration,
-	FOREIGN KEY(hotel_id,room_number) REFERENCES room(hotel_id,room_number)
+	FOREIGN KEY(registration_id) REFERENCES registration ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(hotel_id,room_number) REFERENCES room(hotel_id,room_number) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- registration and customer
 -- unlike the current schema diagram, the attributes for customer are not preceded by customer
+-- ON DELETE/UPDATE CASCADE since the info about registration still remains in the db
 CREATE TABLE makes(
 	registration_id bigint PRIMARY KEY,
 	id_number bigint NOT NULL,
 	id_type varchar(3) NOT NULL CHECK (id_type='sin' OR id_type='ssn'),
-	FOREIGN KEY(registration_id) REFERENCES registration,
-	FOREIGN KEY(id_number,id_type) REFERENCES customer
+	FOREIGN KEY(registration_id) REFERENCES registration ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(id_number,id_type) REFERENCES customer ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- employee and hotel
@@ -203,8 +205,8 @@ CREATE TABLE works_at(
 	id_type varchar(3) CHECK (id_type='sin' OR id_type='ssn'),
 	hotel_id bigint NOT NULL,
 	PRIMARY KEY(id_number,id_type),
-	FOREIGN KEY(id_number,id_type) REFERENCES employee,
-	FOREIGN KEY(hotel_id) REFERENCES hotel
+	FOREIGN KEY(id_number,id_type) REFERENCES employee ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(hotel_id) REFERENCES hotel ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- employee with itself
@@ -214,8 +216,8 @@ CREATE TABLE supervises(
 	manager_id_number bigint,
 	manager_id_type varchar(3) CHECK (manager_id_type='sin' OR manager_id_type='ssn'),
 	PRIMARY KEY(employee_id_number,employee_id_type),
-	FOREIGN KEY(employee_id_number,employee_id_type) REFERENCES employee(id_number,id_type),
-	FOREIGN KEY(manager_id_number,manager_id_type) REFERENCES employee(id_number,id_type)
+	FOREIGN KEY(employee_id_number,employee_id_type) REFERENCES employee(id_number,id_type) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(manager_id_number,manager_id_type) REFERENCES employee(id_number,id_type) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- employee and renting
@@ -224,6 +226,6 @@ CREATE TABLE processes(
 	id_type varchar(3) CHECK (id_type='sin' OR id_type='ssn'),
 	registration_id bigint NOT NULL,
 	PRIMARY KEY(id_number,id_type,registration_id),
-	FOREIGN KEY(id_number,id_type) REFERENCES employee,
-	FOREIGN KEY(registration_id) REFERENCES registration
+	FOREIGN KEY(id_number,id_type) REFERENCES employee ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(registration_id) REFERENCES registration ON DELETE CASCADE ON UPDATE CASCADE
 );

@@ -26,7 +26,7 @@ EXECUTE FUNCTION archive_booking();
 -- hotel manager number superior to 4>rollback
 
 -- I'd like to point out that I know that some of the hotels do not have their own managers, 
--- but that was just the initial data transfer.
+-- but that was just the initial data insertion (see setting up db section in README).
 CREATE OR REPLACE FUNCTION monitor_hotel_managers()
 RETURNS TRIGGER AS 
 $body$
