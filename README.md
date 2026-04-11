@@ -46,6 +46,18 @@ For each table, **right-click > choose "Import/Export Data..." > click on "Impor
 
 **Step 5: Run `reset_sequences.sql` in pgAdmin**
 
-Run `reset_sequences.sql` in the query tool so auto-increment counters continue from the correct value after the initial data load.
+Run `reset_sequences.sql` in the query tool so auto-increment counters continue from the correct value after the initial data load.*
 
-*If the script ran successfully, you should see a green success notification in pgAdmin's message panel.*
+**Step 6: Run `triggers.sql` in pgAdmin**
+
+Run `triggers.sql` in the query tool for the user-defined constraints to be added to the db implementation.*
+
+**Step 7: Run `indexes.sql` in pgAdmin**
+
+Run `indexes.sql` in the query tool for optimized lookup time for frequent queries.*
+
+**If the script ran successfully, you should see a green success notification in pgAdmin's message panel.*
+
+---
+<div align="center">Powered by <b>Group 28</b></div>
+<h6 align="center">Marianne and Daniela</h6>
