@@ -1,4 +1,5 @@
------- Query 1: Has nested query (from clause) and aggregation 
+SET search_path = 'public';
+------ Query 1: Has nested query (from clause) and aggregation
 -- Find all amenities of room 5 in hotel 44, 
 -- and calculate its final price given that every amenity it has, 
 -- it's price increases by 10% of the original price.

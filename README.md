@@ -56,6 +56,14 @@ Run `triggers.sql` in the query tool for the user-defined constraints to be adde
 
 Run `indexes.sql` in the query tool for optimized lookup time for frequent queries.*
 
+**Step 8: Run `views.sql` in pgAdmin**
+
+Run `views.sql` in the query tool for predefined queries on common data aggregations.*
+
+The following views were implemented:
+> - the number of available rooms per area
+> - the aggregated capacity of all the rooms of a specific hotel
+
 **If the script ran successfully, you should see a green success notification in pgAdmin's message panel.*
 
 ---

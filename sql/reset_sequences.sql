@@ -1,2 +1,3 @@
+SET search_path = 'public';
 SELECT setval(pg_get_serial_sequence('hotel','hotel_id'),(SELECT MAX(hotel_id) FROM hotel));
 SELECT setval(pg_get_serial_sequence('registration','registration_id'),(SELECT MAX(registration_id) FROM registration));
