@@ -35,3 +35,38 @@ INSERT INTO employee (id_number,id_type,hotel_id) VALUES (888987213,'ssn',44);
 -- this delete should fail
 -- DELETE FROM person WHERE id_number=223761213 AND id_type='ssn';
 DELETE FROM employee WHERE id_number=223761213 AND id_type='ssn';
+
+
+
+------ testing queries for trigger of user-defined constraint #6 (from deliverable 1, see triggers.sql)
+-- customer deletion
+-- before
+SELECT registration_id,is_archived FROM registration WHERE registration_id IN (1,7);
+-- trigger fires here
+DELETE FROM customer WHERE id_number=123456789 AND id_type='ssn';
+-- after
+SELECT registration_id,is_archived FROM registration WHERE registration_id IN (1,7);
+
+-- room deletion
+-- before
+SELECT registration_id,is_archived FROM registration WHERE registration_id IN (3,6);
+-- trigger fires here
+DELETE FROM room WHERE hotel_id=23 AND room_number=1;
+-- after
+SELECT registration_id,is_archived FROM registration WHERE registration_id IN (3,6);
+
+-- hotel deletion
+-- before
+SELECT registration_id,is_archived FROM registration WHERE registration_id IN (1,2);
+-- trigger fires here
+DELETE FROM hotel WHERE hotel_id=44;
+-- after
+SELECT registration_id,is_archived FROM registration WHERE registration_id IN (1,2);
+
+-- hotel chain deletion
+-- before
+SELECT registration_id,is_archived FROM registration WHERE registration_id IN (3,4,5,6);
+-- trigger fires here
+DELETE FROM hotel_chain WHERE chain_id=3;
+-- after
+SELECT registration_id,is_archived FROM registration WHERE registration_id IN (3,4,5,6);

@@ -1,4 +1,10 @@
 # room4u
+### **An E-Hotel Management Service**
+
+---
+**Tech Stack**
+
+---
 ## Getting Started
 
 ### Setting up the database
@@ -65,6 +71,8 @@ The following views were implemented:
 > - the aggregated capacity of all the rooms of a specific hotel
 
 **If the script ran successfully, you should see a green success notification in pgAdmin's message panel.*
+
+***Note that `tests.sql` demonstrates trigger behavior through before/after queries. Running them will permanently delete some data. To reverse it, you'll have to go through steps 4 to 8 again*
 
 ---
 <div align="center">Powered by <b>Group 28</b></div>
