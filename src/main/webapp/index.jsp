@@ -18,8 +18,9 @@
     <p class="subtitle">E-Hotel Management Service</p>
 
     <div class="buttons">
-      <button>Employees</button>
-      <button>Customers</button>
+      <button onclick="window.location.href='employee/employee_login.jsp'">Employees</button>
+      <button onclick="window.location.href='user/user_login.jsp'">Customer Login</button>
+      <button onclick="window.location.href='user/user_signup.jsp'">Customer Sign Up</button>
     </div>
 
   </div>

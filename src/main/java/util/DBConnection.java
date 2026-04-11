@@ -1,13 +1,12 @@
-package com.group28.util;
+package util;
 
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Properties;
 
 public class DBConnection {
     private static Connection connection=null;
+
     public static Connection getConnection() throws SQLException {
         if (connection == null) {
             try {
