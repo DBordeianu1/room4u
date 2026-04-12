@@ -10,7 +10,7 @@ It covers the full pipeline from ER Diagram to Relational Schema to a fully impl
 **Tech Stack**
 - **Database:** PostgreSQL
 - **Backend:** Java 17, JSP, JDBC
-- **Frontend:** TBD
+- **Frontend:** HTML5, CSS3
 - **Other:** Python (data loading scripts, with pandas and openpyxl libraries)
 
 ---
