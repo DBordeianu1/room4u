@@ -77,7 +77,9 @@ ON customer
 FOR EACH ROW
 EXECUTE FUNCTION archive_from_customer();
 
--- if you delete a room (will cascade, so a particular one for hotel and hotel_chain is not needed)
+-- if you delete a room
+-- Note: deleting a hotel or hotel chain cascades down to rooms,
+-- which fires this trigger automatically, so no separate hotel/hotel chain triggers are needed
 CREATE OR REPLACE FUNCTION archive_from_room()
 RETURNS TRIGGER AS 
 $body$

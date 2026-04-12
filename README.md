@@ -2,7 +2,16 @@
 ### **An E-Hotel Management Service**
 
 ---
+room4u is a web-based hotel management platform that allows customers to search and book available rooms across hotels in North America. It enables employees to manage rentals, bookings, and customer information.
+
+It covers the full pipeline from ER Diagram to Relational Schema to a fully implemented PostgreSQL database with triggers, indexes, and views.
+
+---
 **Tech Stack**
+- **Database:** PostgreSQL
+- **Backend:** Java 17, JSP, JDBC
+- **Frontend:** TBD
+- **Other:** Python (data loading scripts, with pandas and openpyxl libraries)
 
 ---
 ## Getting Started
@@ -73,6 +82,12 @@ The following views were implemented:
 **If the script ran successfully, you should see a green success notification in pgAdmin's message panel.*
 
 ***Note that `tests.sql` demonstrates trigger behavior through before/after queries. Running them will permanently delete some data. To reverse it, you'll have to go through steps 4 to 8 again*
+
+---
+
+<div align="center">
+    room4u was built collaboratively as part of the project component of <b>CSI2132 (Databases I)</b> in the Winter of 2026
+</div>
 
 ---
 <div align="center">Powered by <b>Group 28</b></div>
