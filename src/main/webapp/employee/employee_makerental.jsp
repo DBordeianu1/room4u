@@ -3,7 +3,7 @@
 
 <%
 DatabaseService db = new DatabaseService();
-Connection conn = db.getConnection();
+Connection connection = db.getConnection();
 
 String loggedId = (String) session.getAttribute("id_number");
 String loggedType = (String) session.getAttribute("id_type");
@@ -34,7 +34,7 @@ if (start != null && end != null) {
     long diff = e.getTime() - s.getTime();
     long nights = diff / (1000 * 60 * 60 * 24);
 
-    PreparedStatement ps = conn.prepareStatement(
+    PreparedStatement ps = connection.prepareStatement(
         "SELECT price FROM room WHERE hotel_id=? AND room_number=?"
     );
     ps.setInt(1, Integer.parseInt(hotelId));
@@ -63,7 +63,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         long diff = endTS.getTime() - startTS.getTime();
         long nights = diff / (1000 * 60 * 60 * 24);
 
-        PreparedStatement psPrice = conn.prepareStatement(
+        PreparedStatement psPrice = connection.prepareStatement(
             "SELECT price FROM room WHERE hotel_id=? AND room_number=?"
         );
         psPrice.setInt(1, Integer.parseInt(hotelId));
@@ -139,7 +139,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
             finalPrice *= 1.15;
         }
 
-        PreparedStatement reg = conn.prepareStatement(
+        PreparedStatement reg = connection.prepareStatement(
             "INSERT INTO registration(start_date, end_date, is_archived) VALUES (?, ?, false)",
             Statement.RETURN_GENERATED_KEYS
         );
@@ -150,7 +150,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         regKeys.next();
         int regId = regKeys.getInt(1);
 
-        PreparedStatement mk = conn.prepareStatement(
+        PreparedStatement mk = connection.prepareStatement(
             "INSERT INTO makes(registration_id, id_number, id_type) VALUES (?, ?, ?)"
         );
         mk.setInt(1, regId);
@@ -158,7 +158,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         mk.setString(3, renterType);
         mk.executeUpdate();
 
-        PreparedStatement rr = conn.prepareStatement(
+        PreparedStatement rr = connection.prepareStatement(
             "INSERT INTO reg_room(registration_id, hotel_id, room_number) VALUES (?, ?, ?)"
         );
         rr.setInt(1, regId);
@@ -166,7 +166,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         rr.setInt(3, Integer.parseInt(roomNum));
         rr.executeUpdate();
 
-        PreparedStatement rent = conn.prepareStatement(
+        PreparedStatement rent = connection.prepareStatement(
             "INSERT INTO renting(registration_id, rental_date) VALUES (?, NOW())"
         );
         rent.setInt(1, regId);

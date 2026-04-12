@@ -3,7 +3,7 @@
 
 <%
 DatabaseService db = new DatabaseService();
-Connection conn = db.getConnection();
+Connection connection = db.getConnection();
 
 String start = request.getParameter("start");
 String end = request.getParameter("end");
@@ -16,21 +16,21 @@ boolean doSearch = (start != null && end != null && !start.isEmpty() && !end.isE
 ResultSet rs = null;
 
 if (doSearch) {
-    PreparedStatement ps = conn.prepareStatement(
-        "SELECT h.hotel_id, h.hotel_name, h.city, h.state_province, h.country, " +
-        "r.room_number, r.price, r.capacity " +
-        "FROM room r " +
-        "JOIN hotel h ON h.hotel_id = r.hotel_id " +
-        "WHERE r.capacity >= ? " +
-        "AND r.price >= ? AND r.price <= ? " +
+    PreparedStatement ps = connection.prepareStatement(
+        "SELECT hotel.hotel_id, hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
+        "room.room_number, room.price, room.capacity " +
+        "FROM room " +
+        "JOIN hotel ON hotel.hotel_id = room.hotel_id " +
+        "WHERE room.capacity >= ? " +
+        "AND room.price >= ? AND room.price <= ? " +
         "AND NOT EXISTS ( " +
-        "   SELECT 1 FROM reg_room rr " +
-        "   JOIN registration reg ON reg.registration_id = rr.registration_id " +
-        "   LEFT JOIN booking b ON b.registration_id = reg.registration_id " +
-        "   LEFT JOIN renting rent ON rent.registration_id = reg.registration_id " +
-        "   WHERE rr.hotel_id = r.hotel_id AND rr.room_number = r.room_number " +
-        "   AND (b.status = 'confirmed' OR rent.registration_id IS NOT NULL) " +
-        "   AND NOT (reg.end_date <= ? OR reg.start_date >= ?) " +
+        "   SELECT 1 FROM reg_room " +
+        "   JOIN registration ON registration.registration_id = reg_room.registration_id " +
+        "   LEFT JOIN booking ON booking.registration_id = registration.registration_id " +
+        "   LEFT JOIN renting ON renting.registration_id = registration.registration_id " +
+        "   WHERE reg_room.hotel_id = room.hotel_id AND reg_room.room_number = room.room_number " +
+        "   AND (booking.status = 'confirmed' OR renting.registration_id IS NOT NULL) " +
+        "   AND NOT (registration.end_date <= ? OR registration.start_date >= ?) " +
         ")"
     );
 

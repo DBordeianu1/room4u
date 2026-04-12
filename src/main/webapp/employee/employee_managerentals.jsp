@@ -3,19 +3,19 @@
 
 <%
 DatabaseService db = new DatabaseService();
-Connection conn = db.getConnection();
+Connection connection = db.getConnection();
 
-PreparedStatement ps = conn.prepareStatement(
-    "SELECT h.hotel_name, h.city, h.state_province, h.country, " +
-    "r.room_number, r.price, r.capacity, " +
-    "reg.registration_id, reg.start_date, reg.end_date, " +
-    "m.id_number, m.id_type " +
-    "FROM renting rent " +
-    "JOIN registration reg ON reg.registration_id = rent.registration_id " +
-    "JOIN makes m ON m.registration_id = reg.registration_id " +
-    "JOIN reg_room rr ON rr.registration_id = reg.registration_id " +
-    "JOIN room r ON r.hotel_id = rr.hotel_id AND r.room_number = rr.room_number " +
-    "JOIN hotel h ON h.hotel_id = rr.hotel_id"
+PreparedStatement ps = connection.prepareStatement(
+    "SELECT hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
+    "room.room_number, room.price, room.capacity, " +
+    "registration.registration_id, registration.start_date, registration.end_date, " +
+    "makes.id_number, makes.id_type " +
+    "FROM renting " +
+    "JOIN registration ON registration.registration_id = renting.registration_id " +
+    "JOIN makes ON makes.registration_id = registration.registration_id " +
+    "JOIN reg_room ON reg_room.registration_id = registration.registration_id " +
+    "JOIN room ON room.hotel_id = reg_room.hotel_id AND room.room_number = reg_room.room_number " +
+    "JOIN hotel ON hotel.hotel_id = reg_room.hotel_id"
 );
 ResultSet rs = ps.executeQuery();
 %>

@@ -3,7 +3,7 @@
 
 <%
 DatabaseService db = new DatabaseService();
-Connection conn = db.getConnection();
+Connection connection = db.getConnection();
 
 String country = request.getParameter("country");
 String start = request.getParameter("trip-start");
@@ -31,22 +31,20 @@ ResultSet rs = null;
 if (hasFilters) {
 
     //will exclude rooms that are already booked
-    StringBuilder sql = new StringBuilder(
-        "SELECT h.hotel_name, h.city, h.state_province, h.country, " +
-        "r.room_number, r.price, r.capacity " +
-        "FROM hotel h " +
-        "JOIN room r ON h.hotel_id = r.hotel_id " +
-        "JOIN hotel_chain hc ON h.chain_id = hc.chain_id " +
-        "WHERE 1=1 " +
-        "AND r.room_number NOT IN ( " +
-        "    SELECT rr.room_number " +
-        "    FROM reg_room rr " +
-        "    JOIN registration reg ON rr.registration_id = reg.registration_id " +
-        "    LEFT JOIN booking b ON reg.registration_id = b.registration_id " +
-        "    LEFT JOIN renting rent ON reg.registration_id = rent.registration_id " +
-        "    WHERE (b.status = 'confirmed' OR rent.registration_id IS NOT NULL) " +
-        ") "
-    );
+    String sql =
+        "SELECT hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
+        "room.room_number, room.price, room.capacity " +
+        "FROM hotel " +
+        "JOIN room ON hotel.hotel_id = room.hotel_id " +
+        "JOIN hotel_chain ON hotel.chain_id = hotel_chain.chain_id " +
+        "AND room.room_number NOT IN ( " +
+        "    SELECT reg_room.room_number " +
+        "    FROM reg_room " +
+        "    JOIN registration ON reg_room.registration_id = registration.registration_id " +
+        "    LEFT JOIN booking ON registration.registration_id = booking.registration_id " +
+        "    LEFT JOIN renting ON registration.registration_id = renting.registration_id " +
+        "    WHERE (booking.status = 'confirmed' OR renting.registration_id IS NOT NULL) " +
+        ") ";
 
     // only apply filters if user actually entered something
     if (!noFilters) {
@@ -73,7 +71,7 @@ if (hasFilters) {
             sql.append("AND r.price <= ? ");
     }
 
-    PreparedStatement ps = conn.prepareStatement(sql.toString());
+    PreparedStatement ps = connection.prepareStatement(sql.toString());
 
     int idx = 1;
 

@@ -2,6 +2,8 @@
 <%@ page import="util.DatabaseService" %>
 
 <%
+Connection connection = db.getConnection();
+
 String id = request.getParameter("user_id");
 String country = request.getParameter("country");
 String firstName = request.getParameter("user_firstname");
@@ -75,7 +77,7 @@ if (request.getMethod().equals("POST")) {
         else {
 
             if ("MANAGER".equals(role)) { //this is to check for user-defined constraint number 14
-                PreparedStatement checkManagers = conn.prepareStatement(
+                PreparedStatement checkManagers = connection.prepareStatement(
                     "SELECT COUNT(*) FROM employee WHERE role='MANAGER' AND hotel_id=?"
                 );
                 checkManagers.setInt(1, hotelId);

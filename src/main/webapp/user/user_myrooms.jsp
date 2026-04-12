@@ -3,38 +3,38 @@
 
 <%
 DatabaseService db = new DatabaseService();
-Connection conn = db.getConnection();
+Connection connection = db.getConnection();
 
 int customerId = Integer.parseInt((String) session.getAttribute("id_number"));
 String idType = (String) session.getAttribute("id_type");
 
 //renting
-PreparedStatement rentPS = conn.prepareStatement(
-    "SELECT h.hotel_name, h.city, h.state_province, h.country, " +
-    "r.room_number, r.price, r.capacity " +
-    "FROM renting rent " +
-    "JOIN registration reg ON rent.registration_id = reg.registration_id " +
-    "JOIN makes m ON m.registration_id = reg.registration_id " +
-    "JOIN reg_room rr ON rr.registration_id = reg.registration_id " +
-    "JOIN room r ON r.hotel_id = rr.hotel_id AND r.room_number = rr.room_number " +
-    "JOIN hotel h ON h.hotel_id = r.hotel_id " +
-    "WHERE m.id_number = ? AND m.id_type = ?"
+PreparedStatement rentPS = connection.prepareStatement(
+    "SELECT hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
+    "room.room_number, room.price, room.capacity " +
+    "FROM renting " +
+    "JOIN registration ON renting.registration_id = registration.registration_id " +
+    "JOIN makes ON makes.registration_id = registration.registration_id " +
+    "JOIN reg_room ON reg_room.registration_id = registration.registration_id " +
+    "JOIN room ON room.hotel_id = reg_room.hotel_id AND room.room_number = reg_room.room_number " +
+    "JOIN hotel ON hotel.hotel_id = room.hotel_id " +
+    "WHERE makes.id_number = ? AND makes.id_type = ?"
 );
 rentPS.setInt(1, customerId);
 rentPS.setString(2, idType);
 ResultSet rsRent = rentPS.executeQuery();
 
 //bookings
-PreparedStatement bookPS = conn.prepareStatement(
-    "SELECT h.hotel_name, h.city, h.state_province, h.country, " +
-    "r.room_number, r.price, r.capacity " +
-    "FROM booking b " +
-    "JOIN registration reg ON b.registration_id = reg.registration_id " +
-    "JOIN makes m ON m.registration_id = reg.registration_id " +
-    "JOIN reg_room rr ON rr.registration_id = reg.registration_id " +
-    "JOIN room r ON r.hotel_id = rr.hotel_id AND r.room_number = rr.room_number " +
-    "JOIN hotel h ON h.hotel_id = r.hotel_id " +
-    "WHERE m.id_number = ? AND m.id_type = ? AND b.status = 'confirmed'"
+PreparedStatement bookPS = connection.prepareStatement(
+    "SELECT hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
+    "room.room_number, room.price, room.capacity " +
+    "FROM booking " +
+    "JOIN registration ON booking.registration_id = registration.registration_id " +
+    "JOIN makes ON makes.registration_id = registration.registration_id " +
+    "JOIN reg_room ON reg_room.registration_id = registration.registration_id " +
+    "JOIN room ON room.hotel_id = reg_room.hotel_id AND room.room_number = reg_room.room_number " +
+    "JOIN hotel ON hotel.hotel_id = room.hotel_id " +
+    "WHERE makes.id_number = ? AND makes.id_type = ? AND booking.status = 'confirmed'"
 );
 bookPS.setInt(1, customerId);
 bookPS.setString(2, idType);

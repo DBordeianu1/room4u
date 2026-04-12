@@ -1,6 +1,6 @@
 <%
 DatabaseService db = new DatabaseService();
-Connection conn = db.getConnection();
+Connection connection = db.getConnection();
 
 String action = request.getParameter("action_type");
 String hotelId = request.getParameter("hotel_id");
@@ -14,7 +14,7 @@ if ("submit".equals(action)) {
     if ("report".equals(choice)) {
         String issue = request.getParameter("issue");
 
-        PreparedStatement ps = conn.prepareStatement(
+        PreparedStatement ps = connection.prepareStatement(
             "INSERT INTO room_problem(hotel_id, room_number, problem) VALUES (?, ?, ?)"
         );
         ps.setInt(1, Integer.parseInt(hotelId));
@@ -33,7 +33,7 @@ if ("submit".equals(action)) {
 
     if ("cancel".equals(choice)) {
 
-        PreparedStatement checkRent = conn.prepareStatement(
+        PreparedStatement checkRent = connection.prepareStatement(
             "SELECT 1 FROM renting WHERE registration_id = ?"
         );
         checkRent.setInt(1, Integer.parseInt(regId));
@@ -49,7 +49,7 @@ if ("submit".equals(action)) {
             return;
         }
 
-        PreparedStatement ps = conn.prepareStatement(
+        PreparedStatement ps = connection.prepareStatement(
             "UPDATE booking SET status='cancelled' WHERE registration_id=?"
         );
         ps.setInt(1, Integer.parseInt(regId));

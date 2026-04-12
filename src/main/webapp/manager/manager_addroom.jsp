@@ -3,7 +3,7 @@
 
 <%
 DatabaseService db = new DatabaseService();
-Connection conn = db.getConnection();
+Connection connection = db.getConnection();
 
 String hotelId = request.getParameter("hotel_id");
 String roomNum = request.getParameter("room_number");
@@ -24,7 +24,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 <%
     } else {
 
-        PreparedStatement check = conn.prepareStatement(
+        PreparedStatement check = connection.prepareStatement(
             "SELECT 1 FROM room WHERE hotel_id=? AND room_number=?"
         );
         check.setInt(1, Integer.parseInt(hotelId));
@@ -37,7 +37,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 <%
         } else {
 
-            PreparedStatement insertRoom = conn.prepareStatement(
+            PreparedStatement insertRoom = connection.prepareStatement(
                 "INSERT INTO room(hotel_id, room_number, price, capacity, extendable) VALUES (?, ?, ?, ?, ?)"
             );
             insertRoom.setInt(1, Integer.parseInt(hotelId));
@@ -47,7 +47,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
             insertRoom.setBoolean(5, "yes".equals(extendable));
             insertRoom.executeUpdate();
 
-            PreparedStatement insertView = conn.prepareStatement(
+            PreparedStatement insertView = connection.prepareStatement(
                 "INSERT INTO room_view(hotel_id, room_number, view_of_room) VALUES (?, ?, ?)"
             );
             insertView.setInt(1, Integer.parseInt(hotelId));

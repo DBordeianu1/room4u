@@ -5,7 +5,7 @@
 
 <%
 DatabaseService db = new DatabaseService();
-Connection conn = db.getConnection();
+Connection connection = db.getConnection();
 
 String action = request.getParameter("action"); //for the date filtering
 int hotelId = Integer.parseInt(request.getParameter("hotel_id"));
@@ -63,14 +63,14 @@ long hours = ChronoUnit.HOURS.between(s, e);
 long nights = hours / 24;
 double totalPrice = nights * price;
 
-PreparedStatement check = conn.prepareStatement(
-    "SELECT 1 FROM reg_room rr " +
-    "JOIN registration reg ON rr.registration_id = reg.registration_id " +
-    "LEFT JOIN booking b ON reg.registration_id = b.registration_id " +
-    "LEFT JOIN renting rent ON reg.registration_id = rent.registration_id " +
-    "WHERE rr.hotel_id = ? AND rr.room_number = ? " +
-    "AND (b.status = 'confirmed' OR rent.registration_id IS NOT NULL) " +
-    "AND NOT (reg.end_date <= ? OR reg.start_date >= ?)"
+PreparedStatement check = connection.prepareStatement(
+    "SELECT 1 FROM reg_room " +
+    "JOIN registration ON reg_room.registration_id = registration.registration_id " +
+    "LEFT JOIN booking ON registration.registration_id = booking.registration_id " +
+    "LEFT JOIN renting ON registration.registration_id = renting.registration_id " +
+    "WHERE reg_room.hotel_id = ? AND reg_room.room_number = ? " +
+    "AND (booking.status = 'confirmed' OR renting.registration_id IS NOT NULL) " +
+    "AND NOT (registration.end_date <= ? OR registration.start_date >= ?)"
 );
 
 check.setInt(1, hotelId);
@@ -137,7 +137,7 @@ String end = request.getParameter("end");
 int customerId = Integer.parseInt((String) session.getAttribute("id_number"));
 String idType = (String) session.getAttribute("id_type");
 
-PreparedStatement reg = conn.prepareStatement(
+PreparedStatement reg = connection.prepareStatement(
     "INSERT INTO registration(start_date, end_date, is_archived) VALUES (?, ?, false) RETURNING registration_id"
 );
 reg.setTimestamp(1, Timestamp.valueOf(start.replace("T"," ") + ":00"));
@@ -146,7 +146,7 @@ ResultSet regRs = reg.executeQuery();
 regRs.next();
 int regId = regRs.getInt(1);
 
-PreparedStatement mk = conn.prepareStatement(
+PreparedStatement mk = connection.prepareStatement(
     "INSERT INTO makes(registration_id, id_number, id_type) VALUES (?, ?, ?)"
 );
 mk.setInt(1, regId);
@@ -154,7 +154,7 @@ mk.setInt(2, customerId);
 mk.setString(3, idType);
 mk.executeUpdate();
 
-PreparedStatement rr = conn.prepareStatement(
+PreparedStatement rr = connection.prepareStatement(
     "INSERT INTO reg_room(registration_id, hotel_id, room_number) VALUES (?, ?, ?)"
 );
 rr.setInt(1, regId);
