@@ -1,7 +1,12 @@
 <%@ page import="java.sql.*" %>
+<%@ page import="util.DBConnection" %>
 <%@ page import="util.DatabaseService" %>
 
 <%
+DatabaseService db = new DatabaseService();
+DBConnection dbConnect = new DBConnection();
+Connection connection = dbConnect.getConnection();
+
 String id = request.getParameter("user_id");
 String country = request.getParameter("country");
 String firstName = request.getParameter("user_firstname");
@@ -21,45 +26,12 @@ if (request.getMethod().equals("POST")) {
     }
 
     else {
-
-        DatabaseService db = new DatabaseService();
         String idType;
         boolean valid = true;
 
-        if (country.equals("canada")) { //SIN validation
-            idType = "sin";
-            if (!id.matches("\\d{9}")) {
-                valid = false;
-            } else {
-                int sum = 0;
-                for (int i = 0; i < id.length(); i++) {
-                    int digit = Character.getNumericValue(id.charAt(i));
-                    if (i % 2 == 1) {
-                        digit *= 2;
-                        if (digit > 9) digit -= 9;
-                    }
-                    sum += digit;
-                }
-                if (sum % 10 != 0) valid = false;
-            }
-        }
-
-        else { //SSN validation
-            idType = "ssn";
-            if (!id.matches("\\d{9}")) {
-                valid = false;
-            } else {
-                String areacode = id.substring(0, 3);
-                String group = id.substring(3, 5);
-                String serialnum = id.substring(5, 9);
-
-                if (areacode.equals("000") || areacode.equals("666") || areacode.charAt(0) == '9') valid = false;
-                if (group.equals("00")) valid = false;
-                if (serialnum.equals("0000")) valid = false;
-            }
-        }
-
-        if (!valid) {
+        if (country.equals("canada")) { idType = "sin"; }
+        else { idType = "ssn"; }
+        if (!(db.validateID(idType, id))) {
 %>
             <script>alert("Please enter a valid SIN or SSN.");</script>
 <%

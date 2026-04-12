@@ -54,8 +54,29 @@ public class DatabaseService {
         return true;
     }
 
-    public void addNewUser(String role, int idNumber, String idType, String firstName, String middleName, String lastName, int streetNumber, String streetName, String city, String province, String postalCode, String country, Integer hotelId
-    ) throws SQLException {
+    //login functions
+
+    public boolean checkExists(int id_number, String id_type) throws SQLException {
+        try {
+            String sql = "SELECT 1 FROM person WHERE id_number = ? AND id_type = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id_number);
+            ps.setString(2, id_type);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public void addNewUser(String role, int idNumber, String idType, String firstName, String middleName, String lastName, int streetNumber, String streetName, String city, String province, String postalCode, String country, Integer hotelId) throws SQLException {
 
         //insert into person first
         String insertPersonSQL = "INSERT INTO person (id_number, id_type, first_name, middle_name, last_name, " + "street_number, street_name, city, state_province, zip_postal_code, country) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -108,16 +129,6 @@ public class DatabaseService {
             psRole.setString(2, idType);
             psRole.setString(3, role.toLowerCase()); //can be anything
             psRole.executeUpdate();
-
-            //for MANAGERS only
-            if (role.equals("MANAGER")) {
-                String insertManagerSQL = "INSERT INTO manager (id_number, id_type) VALUES (?, ?)";
-
-                PreparedStatement manager = connection.prepareStatement(insertManagerSQL);
-                manager.setInt(1, idNumber);
-                manager.setString(2, idType);
-                manager.executeUpdate();
-            }
         }
     }
 
@@ -151,6 +162,52 @@ public class DatabaseService {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean validateID(String idtype, String id){
+        boolean valid = true;
+
+        if (idtype.equals("sin")){
+            if (!id.matches("\\d{9}") || id.charAt(0) == '0') { //9 digit syntax or if it starts with 0 bc db complains about sins starting w 0 LOL
+                valid = false;
+            } else { //this is the luhn algorithm
+                //start @ last number, multiply even numbers by 2
+                //if multiplied number >= 10, add digits together
+                //add to sum
+                int sum = 0;
+                for (int i = id.length() - 1; i >= 0; i--) {
+                    int digit = Character.getNumericValue(id.charAt(i));
+                    if ((i + 1) % 2 == 0) {
+                        digit *= 2;
+                        if (digit > 9){
+                            String digitStringed = String.valueOf(digit);
+                            digit = 0;
+                            for (int j = 0; j < digitStringed.length(); j++){
+                                digit += Character.getNumericValue(digitStringed.charAt(j));
+                            }
+                        }
+                    }
+                    sum += digit;
+                }
+                if (!(sum % 10 == 0)){
+                    valid = false;
+                }
+            }
+        }
+        else{
+            if (!id.matches("\\d{9}")) {
+                valid = false;
+            } else {
+                String areacode = id.substring(0, 3);
+                String group = id.substring(3, 5);
+                String serialnum = id.substring(5, 9);
+
+                if (areacode.equals("000") || areacode.equals("666") || areacode.charAt(0) == '9') valid = false;
+                if (group.equals("00")) valid = false;
+                if (serialnum.equals("0000")) valid = false;
+            }
+        }
+        return valid;
     }
 }
 

@@ -20,10 +20,21 @@ if (request.getMethod().equals("POST")) {
 
         //convert UI values to backend values
         //note to marianne -> if u have time, potentially change the other logic to the java shorthand? to keep consistent
-        String type = idType.equals("Employee") ? "employee" : "customer";
+        String type;
+        if (idType.equals("Employee")) {
+            type = "employee";
+        } else {
+            type = "customer";
+        }
 
         //determine id_type based on country
-        String idTypeCode = country.equals("canada") ? "sin" : "ssn";
+        String idTypeCode;
+        if (country.equals("canada")) {
+            idTypeCode = "sin";
+        } else {
+            idTypeCode = "ssn";
+        }
+
 
         if (type.equals("employee")) {
             success = db.removeEmployee(Integer.parseInt(idNumber), idTypeCode);
@@ -33,11 +44,11 @@ if (request.getMethod().equals("POST")) {
 
         if (!success) {
 %>
-            <script>alert("No matching record found.");</script>
+            <script>alert("No matching person found.");</script>
 <%
         } else {
 %>
-            <script>alert("Record successfully removed.");</script>
+            <script>alert("Person successfully removed.");</script>
 <%
         }
     }
@@ -58,7 +69,7 @@ if (request.getMethod().equals("POST")) {
     <div class="nav-links">
         <button onclick="window.location.href='manager_addemployee.jsp'">Add Employee</button>
         <button onclick="window.location.href='manager_removeemployee.jsp'" class="active">Remove Employee</button>
-        <button onclick="window.location.href='manager_addroom'">Add Room</button>
+        <button onclick="window.location.href='manager_addroom.jsp'">Add Room</button>
         <button onclick="window.location.href='../logout.jsp'">Sign Out</button>
     </div>
 </header>

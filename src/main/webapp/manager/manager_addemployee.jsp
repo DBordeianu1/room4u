@@ -1,8 +1,11 @@
 <%@ page import="java.sql.*" %>
+<%@ page import="util.DBConnection" %>
 <%@ page import="util.DatabaseService" %>
 
 <%
-Connection connection = db.getConnection();
+DatabaseService db = new DatabaseService();
+DBConnection dbConnect = new DBConnection();
+Connection connection = dbConnect.getConnection();
 
 String id = request.getParameter("user_id");
 String country = request.getParameter("country");
@@ -14,7 +17,7 @@ String streetName = request.getParameter("user_streetname");
 String city = request.getParameter("user_city");
 String province = request.getParameter("user_province");
 String postalCode = request.getParameter("user_postalcode");
-String role = request.getParameter("employeetype");
+String role = request.getParameter("role");
 String hotelIdParam = request.getParameter("hotel_id");
 
 Integer hotelId = null;
@@ -28,78 +31,49 @@ if (request.getMethod().equals("POST")) {
         <script>alert("Please fill out all input fields.");</script>
 <%
     }
+    else{
+        if ("MANAGER".equals(role)){
+            PreparedStatement checkManagers = connection.prepareStatement("SELECT COUNT(*) " + "FROM employee_role " + "INNER JOIN employee " + "ON employee_role.id_number = employee.id_number " + "AND employee_role.id_type = employee.id_type " + "WHERE employee_role.employee_role = 'MANAGER' " + "AND employee.hotel_id = ?");
+            checkManagers.setInt(1, hotelId);
+            ResultSet managers = checkManagers.executeQuery();
+            managers.next();
+            int managerCount = managers.getInt(1);
 
-    else {
-
-        DatabaseService db = new DatabaseService();
-        String idType;
-        boolean valid = true;
-
-        if (country.equals("canada")) { //SIN validation
-            idType = "sin";
-            if (!id.matches("\\d{9}")) {
-                valid = false;
-            } else {
-                int sum = 0;
-                for (int i = 0; i < id.length(); i++) {
-                    int digit = Character.getNumericValue(id.charAt(i));
-                    if (i % 2 == 1) {
-                        digit *= 2;
-                        if (digit > 9) digit -= 9;
-                    }
-                    sum += digit;
-                }
-                if (sum % 10 != 0) valid = false;
-            }
-        }
-
-        else { //SSN validation
-            idType = "ssn";
-            if (!id.matches("\\d{9}")) {
-                valid = false;
-            } else {
-                String areacode = id.substring(0, 3);
-                String group = id.substring(3, 5);
-                String serialnum = id.substring(5, 9);
-
-                if (areacode.equals("000") || areacode.equals("666") || areacode.charAt(0) == '9') valid = false;
-                if (group.equals("00")) valid = false;
-                if (serialnum.equals("0000")) valid = false;
-            }
-        }
-
-        if (!valid) {
+            if (managerCount >= 4) {
 %>
-            <script>alert("Please enter a valid SIN or SSN.");</script>
+                <script>
+                alert("This hotel has reached its maximum of 4 managers. Please delete a manager or add a regular employee.");
+                </script>
 <%
+                return;
+            }
         }
+        else {
+            String idType;
+            if (country.equals("canada")) { idType = "sin"; }
+            else { idType = "ssn"; }
+            if (!(db.validateID(idType, id))) { //moved to an external function to make cleaner
+%>
+                <script>alert("Please enter a valid SIN or SSN.");</script>
+<%
+            }
 
         else {
 
-            if ("MANAGER".equals(role)) { //this is to check for user-defined constraint number 14
-                PreparedStatement checkManagers = connection.prepareStatement(
-                    "SELECT COUNT(*) FROM employee WHERE role='MANAGER' AND hotel_id=?"
-                );
-                checkManagers.setInt(1, hotelId);
-                ResultSet managers = checkManagers.executeQuery();
-                managers.next();
-                int managerCount = managers.getInt(1);
-
-                if (managerCount >= 4) {
-        %>
-        <script>
-        alert("This hotel has reached its maximum of 4 managers. Please delete a manager or add a regular employee.");
-        </script>
-        <%
-                    return;
-                }
+            if (db.checkExists(Integer.parseInt(id), idType)) {
+                out.println("<script>alert('A user with this ID already exists.'); window.location='manager_addemployee.jsp';</script>");
+                return;
             }
 
             db.addNewUser(role, Integer.parseInt(id), idType, firstName, middleName, lastName,
                           Integer.parseInt(streetNumber), streetName, city, province, postalCode,
                           country, hotelId);
-
-            response.sendRedirect("manager_addemployee.jsp");
+            %>
+            <script>
+                alert("Employee added successfully.");
+                document.querySelector('form').reset();
+            </script>
+            <%
             return;
         }
 
@@ -119,9 +93,10 @@ if (request.getMethod().equals("POST")) {
 <body>
 <header>
     <div class="nav-links">
-        <button class="active">Add Employee</button>
-        <button>Remove Employee</button>
-        <button>Sign Out</button>
+            <button onclick="window.location.href='manager_addemployee.jsp'" class="active">Add Employee</button>
+            <button onclick="window.location.href='manager_removeemployee.jsp'">Remove Employee</button>
+            <button onclick="window.location.href='manager_addroom.jsp'">Add Room</button>
+            <button onclick="window.location.href='../logout.jsp'">Sign Out</button>
     </div>
 </header>
 
@@ -133,14 +108,14 @@ if (request.getMethod().equals("POST")) {
     <form method="post" action="manager_addemployee.jsp">
 
     <fieldset>
-      <div class="nav-links">
-        <button onclick="window.location.href='manager_addemployee.jsp'" class="active">Add Employee</button>
-        <button onclick="window.location.href='manager_removeemployee.jsp'">Remove Employee</button>
-        <button onclick="window.location.href='manager_addroom'">Add Room</button>
-        <button onclick="window.location.href='../logout.jsp'">Sign Out</button>
+      <div id="date_filter">
+        <label><small>Employee type</small></label>
+        <select name="role">
+            <option value="MANAGER">Manager</option>
+            <option value="EMPLOYEE">Hotel Staff</option>
+        </select>
       </div>
       <br>
-
       <div id="date_filter">
           <label><small>ID number:</small></label>
           <div class="search-bar">
@@ -148,7 +123,6 @@ if (request.getMethod().equals("POST")) {
           </div>
       </div>
       <br>
-
       <div id="date_filter">
             <label><small>First name:</small></label>
             <div class="search-bar">
@@ -168,7 +142,7 @@ if (request.getMethod().equals("POST")) {
       <div id="date_filter">
             <label><small>Last name:</small></label>
             <div class="search-bar">
-            <input type="text" name="user_lastname">
+            <input type="text" name="user_lastname" required>
         </div>
       </div>
       <br>
@@ -176,7 +150,7 @@ if (request.getMethod().equals("POST")) {
       <div id="date_filter">
             <label><small>Street number:</small></label>
             <div class="search-bar">
-            <input type="text" name="user_streetnumber" required>
+            <input type="number" name="user_streetnumber" min="1" max="1000" required>
         </div>
       </div>
       <br>

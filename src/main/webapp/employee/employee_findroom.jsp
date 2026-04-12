@@ -82,8 +82,15 @@ if (doSearch) {
               <input type="date" id="end" name="trip-end" min="2026-01-01" max="2050-12-31" />
             </div>
             <div id="date_filter">
-              <label><small>Capacity:</small></label>
-              <input type="number" id="capacity" name="capacity" min="1" max="100" />
+                <label><small>Capacity:</small></label>
+                <select name="capacity">
+                    <option value="single">Single</option>
+                    <option value="double">Double</option>
+                    <option value="suite">Suite</option>
+                    <option value="family">Family</option>
+                    <option value="royal">Royal</option>
+                    <option value="penthouse">Penthouse</option>
+                </select>
             </div>
             <div id="date_filter">
               <label><small>Min. price</small></label>

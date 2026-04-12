@@ -1,9 +1,11 @@
 <%@ page import="java.sql.*" %>
+<%@ page import="util.DBConnection" %>
 <%@ page import="util.DatabaseService" %>
 
 <%
 DatabaseService db = new DatabaseService();
-Connection connection = db.getConnection();
+DBConnection dbConnect = new DBConnection();
+Connection connection = dbConnect.getConnection();
 
 String hotelId = request.getParameter("hotel_id");
 String roomNum = request.getParameter("room_number");
@@ -81,21 +83,13 @@ window.location.href = "manager_addroom.jsp";
     <div class="nav-links">
         <button onclick="window.location.href='manager_addemployee.jsp'">Add Employee</button>
         <button onclick="window.location.href='manager_removeemployee.jsp'">Remove Employee</button>
-        <button onclick="window.location.href='manager_addroom'" class="active">Add Room</button>
+        <button onclick="window.location.href='manager_addroom.jsp'" class="active">Add Room</button>
         <button onclick="window.location.href='../logout.jsp'">Sign Out</button>
     </div>
-    <div class="nav-links">
-            <button class="active">Add Employee</button>
-            <button>Remove Employee</button>
-            <button>Sign Out</button>
-        </div>
 </header>
 
 <div class="glass_container_big">
-
-    <h2>Add Room</h2>
-    <br>
-
+    <h2>Add Room</h2><br>
     <form method="post" action="manager_addroom.jsp">
 
         <fieldset>

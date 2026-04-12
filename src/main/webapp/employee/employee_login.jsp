@@ -36,7 +36,7 @@ if (request.getMethod().equals("POST")) {
             session.setAttribute("user_id", id);
 
             if(role.equals("manager")){
-                response.sendRedirect("manager_addemployee.jsp");
+                response.sendRedirect("../manager/manager_addemployee.jsp");
             }
             else{
                 response.sendRedirect("employee_managerentals.jsp");
