@@ -51,3 +51,51 @@ AFTER INSERT OR DELETE
 ON employee
 FOR EACH ROW
 EXECUTE FUNCTION monitor_hotel_managers();
+
+-- trigger for user-defined constraint #6 (from deliverable 1)
+-- When information about a hotel chain, hotel (or room) or customer gets deleted, the 
+-- booking/renting associated should be archived, i.e. the attribute is_archived in 
+-- registration is set to true. 
+-- if you delete a customer
+CREATE OR REPLACE FUNCTION archive_from_customer()
+RETURNS TRIGGER AS 
+$body$
+BEGIN
+	IF TG_OP='DELETE' THEN
+		UPDATE registration
+		SET is_archived=true
+		WHERE registration_id 
+		IN (SELECT registration_id FROM makes WHERE id_number=OLD.id_number AND id_type=OLD.id_type);
+	END IF;
+	RETURN OLD;
+END;
+$body$ LANGUAGE plpgsql;
+
+CREATE TRIGGER to_archive_from_customer
+BEFORE DELETE
+ON customer
+FOR EACH ROW
+EXECUTE FUNCTION archive_from_customer();
+
+-- if you delete a room
+-- Note: deleting a hotel or hotel chain cascades down to rooms,
+-- which fires this trigger automatically, so no separate hotel/hotel chain triggers are needed
+CREATE OR REPLACE FUNCTION archive_from_room()
+RETURNS TRIGGER AS 
+$body$
+BEGIN
+	IF TG_OP='DELETE' THEN
+		UPDATE registration
+		SET is_archived=true
+		WHERE registration_id 
+		IN (SELECT registration_id FROM reg_room WHERE hotel_id=OLD.hotel_id AND room_number=OLD.room_number);
+	END IF;
+	RETURN OLD;
+END;
+$body$ LANGUAGE plpgsql;
+
+CREATE TRIGGER to_archive_from_room
+BEFORE DELETE
+ON room
+FOR EACH ROW
+EXECUTE FUNCTION archive_from_room();
