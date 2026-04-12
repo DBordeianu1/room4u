@@ -24,7 +24,7 @@ if (action == null) {
 <body>
 
 <div class="glass_container_big">
-    <!-button will only go to user_findroom because booking is a user-only thing->
+    <!--button will only go to user_findroom because booking is a user-only thing-->
     <button onclick="window.location.href='user_findroom.jsp'" style="all:unset; cursor:pointer;"></button>
     <h2>Book <%= hotelId %> <%= roomNum %></h2>
 

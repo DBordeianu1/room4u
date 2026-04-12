@@ -18,10 +18,11 @@ if (request.getMethod().equals("POST")) {
         DatabaseService db = new DatabaseService();
         boolean success = false;
 
-        // convert UI values to backend values
+        //convert UI values to backend values
+        //note to marianne -> if u have time, potentially change the other logic to the java shorthand? to keep consistent
         String type = idType.equals("Employee") ? "employee" : "customer";
 
-        // determine id_type based on country
+        //determine id_type based on country
         String idTypeCode = country.equals("canada") ? "sin" : "ssn";
 
         if (type.equals("employee")) {
