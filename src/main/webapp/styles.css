@@ -196,7 +196,7 @@ input[type="checkbox"]:checked {
   border-color: rgba(255, 255, 255, 0.6);
 }
 
-input[type="date"],
+input[type="datetime-local"],
 input[type="number"],
 input[type="text"]{
   background: rgba(255, 255, 255, 0.07);
@@ -277,11 +277,8 @@ hr{
   height: 200px;
   border-radius: 16px 16px 0 0;
   display: block;
+  background-image: url("img/room_image.jpg");
 }
-
-.img-holiday   { background: linear-gradient(135deg, #c89b6e 0%, #8b6914 40%, #2c4a6e 100%); }
-.img-riverview { background: linear-gradient(135deg, #4a7fa5 0%, #2d5a7a 40%, #1a3a5c 100%); }
-.img-whisper   { background: linear-gradient(135deg, #8a7060 0%, #5a4535 40%, #2c4a3e 100%); }
 
 /* Body */
 .room-body {

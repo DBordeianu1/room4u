@@ -109,63 +109,63 @@ if (request.getMethod().equals("POST")) {
           <div id="date_filter">
               <label><small>SIN/SSN number:*</small></label>
               <div class="search-bar">
-                <input type="number" min="1" max="1000000000" name="user_id">
+                <input type="number" min="1" max="1000000000" name="user_id" required>
               </div>
             </div>
           <br>
           <div id="date_filter">
                 <label><small>First name:*</small></label>
                 <div class="search-bar">
-                  <input type="text" name="user_firstname">
+                  <input type="text" name="user_firstname" required>
                 </div>
           </div>
           <br>
           <div id="date_filter">
                 <label><small>Middle name:</small></label>
                 <div class="search-bar">
-                <input type="text" name="user_middlename">
+                <input type="text" name="user_middlename" required>
             </div>
           </div>
           <br>
           <div id="date_filter">
                 <label><small>Last name:*</small></label>
                 <div class="search-bar">
-                <input type="text" name="user_lastname">
+                <input type="text" name="user_lastname" required>
             </div>
           </div>
           <br>
           <div id="date_filter">
                 <label><small>Street number:*</small></label>
                 <div class="search-bar">
-                <input type="number" min="1" max="1000" name="user_streetnumber">
+                <input type="number" min="1" max="1000" name="user_streetnumber" required>
             </div>
           </div>
           <br>
           <div id="date_filter">
                 <label><small>Street name:*</small></label>
                 <div class="search-bar">
-                <input type="text" name="user_streetname">
+                <input type="text" name="user_streetname" required>
             </div>
           </div>
           <br>
           <div id="date_filter">
                 <label><small>City:*</small></label>
                 <div class="search-bar">
-                <input type="text" name="user_city">
+                <input type="text" name="user_city" required>
             </div>
           </div>
           <br>
           <div id="date_filter">
                 <label><small>State/Province:*</small></label>
                 <div class="search-bar">
-                <input type="text" name="user_province">
+                <input type="text" name="user_province" required>
             </div>
           </div>
           <br>
           <div id="date_filter">
                 <label><small>Postal code:*</small></label>
                 <div class="search-bar">
-                <input type="text" name="user_postalcode">
+                <input type="text" name="user_postalcode" required>
             </div>
           </div>
           <br>

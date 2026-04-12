@@ -120,5 +120,37 @@ public class DatabaseService {
             }
         }
     }
+
+    public boolean removeEmployee(int idNumber, String idType) {
+        try {
+            String sql = "DELETE FROM person WHERE id_number = ? AND id_type = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+
+            ps.setInt(1, idNumber);
+            ps.setString(2, idType);
+
+            int rows = ps.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean removeCustomer(int idNumber, String idType) {
+        try { //very similar to employee
+            String sql = "DELETE FROM person WHERE id_number = ? AND id_type = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+
+            ps.setInt(1, idNumber);
+            ps.setString(2, idType);
+
+            int rows = ps.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

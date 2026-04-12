@@ -9,7 +9,8 @@ if (request.getMethod().equals("POST")) {
 
     if (id == null || id.isEmpty() ||
         country == null || country.isEmpty()) {
-%>
+%>      //note from marianne: this is leftover code before i realized inputs can have a requireed attribute :(
+        //will be keeping this here just in case something goes wrong
         <script>alert("Please fill out all input fields.");</script>
 <%
     }
@@ -72,7 +73,7 @@ if (request.getMethod().equals("POST")) {
           <div id="date_filter">
               <label><small>Identification:*</small></label>
               <div class="search-bar">
-                <input type="text" name="id_number" placeholder="Enter your SIN/SSN" />
+                <input type="text" name="id_number" placeholder="Enter your SIN/SSN" required/>
               </div>
             </div>
         </fieldset>

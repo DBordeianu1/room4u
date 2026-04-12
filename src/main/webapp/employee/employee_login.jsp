@@ -88,7 +88,7 @@ if (request.getMethod().equals("POST")) {
           <div id="date_filter">
               <label><small>Identification:*</small></label>
               <div class="search-bar">
-                <input type="text" name="id_number" placeholder="Enter your Employee ID" />
+                <input type="text" name="id_number" placeholder="Enter your Employee ID" required/>
               </div>
           </div>
         </fieldset>
