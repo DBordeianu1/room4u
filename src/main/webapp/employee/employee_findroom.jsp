@@ -12,43 +12,63 @@ String end = request.getParameter("trip-end");
 String capacity = request.getParameter("capacity");
 String minPrice = request.getParameter("min_price");
 String maxPrice = request.getParameter("max_price");
+
 Integer hotelId = (Integer) session.getAttribute("hotel_id");
 
-boolean doSearch = (start != null && end != null && !start.isEmpty() && !end.isEmpty());
+boolean hasFilters = request.getMethod().equalsIgnoreCase("POST");
+
+boolean noFilters = (capacity == null || capacity.isEmpty()) && (minPrice == null || minPrice.isEmpty()) && (maxPrice == null || maxPrice.isEmpty());
 
 ResultSet rs = null;
 
-if (doSearch) {
-    PreparedStatement ps = connection.prepareStatement(
+if (hasFilters) {
+    StringBuilder sql = new StringBuilder(
         "SELECT hotel.hotel_id, hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
         "room.room_number, room.price, room.capacity " +
-        "FROM room " +
-        "JOIN hotel ON hotel.hotel_id = room.hotel_id " +
-        "WHERE room.capacity = ? " +
-        "AND room.price >= ? AND room.price <= ? " +
-        "AND room.hotel_id = ? " +
-        "AND NOT EXISTS ( " +
-        "   SELECT 1 FROM reg_room " +
-        "   JOIN registration ON registration.registration_id = reg_room.registration_id " +
-        "   LEFT JOIN booking ON booking.registration_id = registration.registration_id " +
-        "   LEFT JOIN renting ON renting.registration_id = registration.registration_id " +
-        "   WHERE reg_room.hotel_id = room.hotel_id AND reg_room.room_number = room.room_number " +
-        "   AND (booking.status = 'confirmed' OR renting.registration_id IS NOT NULL) " +
-        "   AND NOT (registration.end_date <= ? OR registration.start_date >= ?) " +
-        ")"
+        "FROM hotel " +
+        "JOIN room ON hotel.hotel_id = room.hotel_id " +
+        "WHERE hotel.hotel_id = ? " +
+        "AND (room.hotel_id, room.room_number) NOT IN ( " +
+        "    SELECT rr.hotel_id, rr.room_number " +
+        "    FROM reg_room rr " +
+        "    JOIN registration reg ON rr.registration_id = reg.registration_id " +
+        "    LEFT JOIN booking b ON reg.registration_id = b.registration_id " +
+        "    LEFT JOIN renting rent ON reg.registration_id = rent.registration_id " +
+        "    WHERE b.status = 'confirmed' OR rent.registration_id IS NOT NULL " +
+        ") "
     );
 
-    ps.setString(1, capacity);
-    ps.setDouble(2, Double.parseDouble(minPrice));
-    ps.setDouble(3, Double.parseDouble(maxPrice));
-    ps.setInt(4, hotelId);
-    ps.setTimestamp(5, Timestamp.valueOf(start.replace("T", " ") + ":00"));
-    ps.setTimestamp(6, Timestamp.valueOf(end.replace("T", " ") + ":00"));
+    if (!noFilters) {
 
+        if (capacity != null && !capacity.isEmpty())
+            sql.append("AND room.capacity = ? ");
+
+        if (minPrice != null && !minPrice.isEmpty())
+            sql.append("AND room.price >= ? ");
+
+        if (maxPrice != null && !maxPrice.isEmpty())
+            sql.append("AND room.price <= ? ");
+    }
+
+    PreparedStatement ps = connection.prepareStatement(sql.toString());
+
+    int index = 1;
+    ps.setInt(index++, hotelId);
+
+    if (!noFilters) {
+
+        if (capacity != null && !capacity.isEmpty())
+            ps.setString(index++, capacity);
+
+        if (minPrice != null && !minPrice.isEmpty())
+            ps.setDouble(index++, Double.parseDouble(minPrice));
+
+        if (maxPrice != null && !maxPrice.isEmpty())
+            ps.setDouble(index++, Double.parseDouble(maxPrice));
+    }
     rs = ps.executeQuery();
 }
 %>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -74,7 +94,7 @@ if (doSearch) {
 
   <h2>Available Rooms to Rent</h2>
   <br>
-  <form method="get">
+  <form method="post" action="employee_findroom.jsp">
       <fieldset id="filters">
 
           <div id="id_choices">
@@ -117,7 +137,7 @@ if (doSearch) {
 
   <div class="rooms-grid">
       <%
-      if (doSearch && rs != null) {
+      if (hasFilters && rs != null) {
           while (rs.next()) {
 
               int hotelId2 = rs.getInt("hotel_id");
@@ -149,8 +169,8 @@ if (doSearch) {
       </div>
 
       <%
-          } // closes while
-      } // closes if
+          }
+      }
       %>
   </div>
 

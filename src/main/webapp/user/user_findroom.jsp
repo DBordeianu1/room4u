@@ -77,30 +77,30 @@ if (hasFilters) {
 
     PreparedStatement ps = connection.prepareStatement(sql.toString());
 
-    int idx = 1;
+    int index = 1;
 
     if (!noFilters) {
 
         if (country != null && !country.isEmpty())
-            ps.setString(idx++, country.toLowerCase());
+            ps.setString(index++, country.toLowerCase());
 
         if (capacity != null && !capacity.isEmpty())
-            ps.setString(idx++, capacity);
+            ps.setString(index++, capacity);
 
         if (category != null && !category.isEmpty())
-            ps.setInt(idx++, Integer.parseInt(category));
+            ps.setInt(index++, Integer.parseInt(category));
 
         if (hotelName != null && !hotelName.isEmpty())
-            ps.setString(idx++, "%" + hotelName + "%");
+            ps.setString(index++, "%" + hotelName + "%");
 
         if (hotelCapacity != null && !hotelCapacity.isEmpty())
-            ps.setInt(idx++, Integer.parseInt(hotelCapacity));
+            ps.setInt(index++, Integer.parseInt(hotelCapacity));
 
         if (minPrice != null && !minPrice.isEmpty())
-            ps.setDouble(idx++, Double.parseDouble(minPrice));
+            ps.setDouble(index++, Double.parseDouble(minPrice));
 
         if (maxPrice != null && !maxPrice.isEmpty())
-            ps.setDouble(idx++, Double.parseDouble(maxPrice));
+            ps.setDouble(index++, Double.parseDouble(maxPrice));
     }
 
     rs = ps.executeQuery();
