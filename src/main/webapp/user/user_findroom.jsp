@@ -119,8 +119,8 @@ if (hasFilters) {
 <body>
 <header>
     <div class="nav-links">
-        <button onclick="window.location.href='../user_findroom.jsp'" class="active">Find Room</button>
-        <button onclick="window.location.href='../user_myrooms.jsp'">My Rooms</button>
+        <button onclick="window.location.href='user_findroom.jsp'" class="active">Find Room</button>
+        <button onclick="window.location.href='user_myrooms.jsp'">My Rooms</button>
         <button onclick="window.location.href='../logout.jsp'">Sign Out</button>
     </div>
 </header>
@@ -224,7 +224,7 @@ if (hasFilters) {
       </div>
       <div class="room_buttons">
         <button onclick="window.location.href='../room_info.jsp?role=customer1&hotel_id=<%= hotelId %>&room_number=<%= roomNum %>'">View Info</button>
-        <button onclick="window.location.href='book_room.jsp?hotel_id=<%= hotelId %>&room_number=<%= roomNum %>&price=<%= price %>'">Book Room</button>
+        <button onclick="window.location.href='book_room.jsp?hotel_id=<%= hotelId %>&room_number=<%= roomNum %>&price=<%= price %>&hotel_name=<%= hotelName2 %>'">Book Room</button>
       </div>
     </div>
 

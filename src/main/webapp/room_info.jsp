@@ -15,7 +15,7 @@ String role = request.getParameter("role");
 String backPage;
 
 if (role.equals("customer1")) {
-    backPage = "user/user_findrooms.jsp";
+    backPage = "user/user_findroom.jsp";
 }
 else if (role.equals("customer2")) {
     backPage = "user/user_myrooms.jsp";
@@ -112,7 +112,8 @@ while (rsP.next()) {
 
 <div class="glass_container_big">
   <button onclick="window.location.href='<%= backPage %>'" style="all:unset; cursor:pointer;"><svg  style="width:20px; height:20px;" fill="#dbe7ea" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="#dbe7ea"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g data-name="Layer 2"> <g data-name="arrow-ios-back"> <rect width="24" height="24" transform="rotate(90 12 12)" opacity="0"></rect> <path d="M13.83 19a1 1 0 0 1-.78-.37l-4.83-6a1 1 0 0 1 0-1.27l5-6a1 1 0 0 1 1.54 1.28L10.29 12l4.32 5.36a1 1 0 0 1-.78 1.64z"></path> </g> </g> </g></svg></button>
-
+  <br>
+  <br>
   <h2>Info for <%= hotelName %> <%= roomNum %></h2>
   <br>
   <p><b>Price per night: </b>$<%= price %></p>

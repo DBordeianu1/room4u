@@ -2,13 +2,18 @@
 <%@ page import="util.DatabaseService" %>
 <%@ page import="java.time.*" %>
 <%@ page import="java.time.temporal.ChronoUnit" %>
+<%@ page import="java.sql.*" %>
+<%@ page import="util.DBConnection" %>
+<%@ page import="util.DatabaseService" %>
 
 <%
 DatabaseService db = new DatabaseService();
-Connection connection = db.getConnection();
+DBConnection dbConnect = new DBConnection();
+Connection connection = dbConnect.getConnection();
 
 String action = request.getParameter("action"); //for the date filtering
 int hotelId = Integer.parseInt(request.getParameter("hotel_id"));
+String hotelName = request.getParameter("hotel_name");
 int roomNum = Integer.parseInt(request.getParameter("room_number"));
 double price = Double.parseDouble(request.getParameter("price"));
 
@@ -18,27 +23,31 @@ if (action == null) {
 <!DOCTYPE html>
 <html>
 <head>
-    <h2>Book Room</h2>
-    <link rel="stylesheet" href="styles.css">
+    <title>Book Room</title>
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
 
 <div class="glass_container_big">
     <!--button will only go to user_findroom because booking is a user-only thing-->
-    <button onclick="window.location.href='user_findroom.jsp'" style="all:unset; cursor:pointer;"></button>
-    <h2>Book <%= hotelId %> <%= roomNum %></h2>
-
+    <button onclick="window.location.href='user_findroom.jsp'" style="all:unset; cursor:pointer;">
+        <svg  style="width:20px; height:20px;" fill="#dbe7ea" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="#dbe7ea"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g data-name="Layer 2"> <g data-name="arrow-ios-back"> <rect width="24" height="24" transform="rotate(90 12 12)" opacity="0"></rect> <path d="M13.83 19a1 1 0 0 1-.78-.37l-4.83-6a1 1 0 0 1 0-1.27l5-6a1 1 0 0 1 1.54 1.28L10.29 12l4.32 5.36a1 1 0 0 1-.78 1.64z"></path> </g> </g> </g></svg>
+    </button>
+    <br>
+    <br>
+    <h2>Book <%= hotelName %> Room <%= roomNum %></h2>
+    <br>
     <form method="post">
-        //takes values from the prev. page
+        <!--will take values from the prev. page hopefully-->
         <input type="hidden" name="hotel_id" value="<%= hotelId %>">
         <input type="hidden" name="room_number" value="<%= roomNum %>">
         <input type="hidden" name="price" value="<%= price %>">
-        <input type="hidden" name="action" value="dates"> //submits to action to confirm dates are put in
+        <input type="hidden" name="action" value="dates">
 
-        <label>Start date:</label>
+        <label><small>Start date:</small></label>
         <input type="datetime-local" name="start" required><br><br>
 
-        <label>End date:</label>
+        <label><small>End date:</small></label>
         <input type="datetime-local" name="end" required><br><br>
 
         <button type="submit">Continue</button>
@@ -59,6 +68,15 @@ String end = request.getParameter("end");
 
 LocalDateTime s = LocalDateTime.parse(start);
 LocalDateTime e = LocalDateTime.parse(end);
+if (e.isBefore(s) || s.isBefore(LocalDateTime.now())) {
+%>
+<script>
+    alert("Invalid start or end date. Please ensure your end date is after your start date, or your start date is not in the past.");
+    window.history.back(); //note to marianne: go back and use this for login/add user alerts if you have time
+</script>
+<%
+    return;
+}
 long hours = ChronoUnit.HOURS.between(s, e);
 long nights = hours / 24;
 double totalPrice = nights * price;
@@ -96,13 +114,18 @@ if (rsCheck.next()) {
 <html>
 <head>
     <title>Confirm Booking</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
 
 <div class="glass_container_big">
-    <h2>Confirm Your Booking</h2>
-
+    <button onclick="window.location.href='user_findroom.jsp'" style="all:unset; cursor:pointer;">
+        <svg  style="width:20px; height:20px;" fill="#dbe7ea" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="#dbe7ea"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g data-name="Layer 2"> <g data-name="arrow-ios-back"> <rect width="24" height="24" transform="rotate(90 12 12)" opacity="0"></rect> <path d="M13.83 19a1 1 0 0 1-.78-.37l-4.83-6a1 1 0 0 1 0-1.27l5-6a1 1 0 0 1 1.54 1.28L10.29 12l4.32 5.36a1 1 0 0 1-.78 1.64z"></path> </g> </g> </g></svg>
+    </button>
+    <br>
+    <br>
+    <h2>Confirm Your Booking for <%= hotelName %> Room <%= roomNum %></h2>
+    <br>
     <p><b>Room:</b> <%= roomNum %></p>
     <p><b>From:</b> <%= start %></p>
     <p><b>To:</b> <%= end %></p>
@@ -117,7 +140,7 @@ if (rsCheck.next()) {
         <input type="hidden" name="end" value="<%= end %>">
         <input type="hidden" name="price" value="<%= price %>">
         <input type="hidden" name="action" value="confirm">
-
+        <br>
         <button type="submit">Confirm Booking</button>
     </form>
 </div>
@@ -134,7 +157,7 @@ if ("confirm".equals(action)) {
 String start = request.getParameter("start");
 String end = request.getParameter("end");
 
-int customerId = Integer.parseInt((String) session.getAttribute("id_number"));
+int customerId = Integer.parseInt((String) session.getAttribute("user_id"));
 String idType = (String) session.getAttribute("id_type");
 
 PreparedStatement reg = connection.prepareStatement(
@@ -162,7 +185,7 @@ rr.setInt(2, hotelId);
 rr.setInt(3, roomNum);
 rr.executeUpdate();
 
-PreparedStatement bk = conn.prepareStatement(
+PreparedStatement bk = connection.prepareStatement(
     "INSERT INTO booking(registration_id, status, booking_date) VALUES (?, 'confirmed', NOW())"
 );
 bk.setInt(1, regId);

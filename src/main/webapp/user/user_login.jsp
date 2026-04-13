@@ -35,6 +35,7 @@ if (request.getMethod().equals("POST")) {
 
         else {
             session.setAttribute("user_id", id);
+            session.setAttribute("id_type", idType);
             response.sendRedirect("user_findroom.jsp");
             return;
         }

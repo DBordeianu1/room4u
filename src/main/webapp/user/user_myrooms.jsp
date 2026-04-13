@@ -1,16 +1,19 @@
 <%@ page import="java.sql.*" %>
+<%@ page import="util.DBConnection" %>
 <%@ page import="util.DatabaseService" %>
 
 <%
 DatabaseService db = new DatabaseService();
-Connection connection = db.getConnection();
+DBConnection dbConnect = new DBConnection();
+Connection connection = dbConnect.getConnection();
 
-int customerId = Integer.parseInt((String) session.getAttribute("id_number"));
+int customerId = Integer.parseInt((String) session.getAttribute("user_id"));
 String idType = (String) session.getAttribute("id_type");
 
 //renting
 PreparedStatement rentPS = connection.prepareStatement(
-    "SELECT hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
+    "SELECT registration.registration_id, " +
+    "hotel.hotel_id, hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
     "room.room_number, room.price, room.capacity " +
     "FROM renting " +
     "JOIN registration ON renting.registration_id = registration.registration_id " +
@@ -26,7 +29,8 @@ ResultSet rsRent = rentPS.executeQuery();
 
 //bookings
 PreparedStatement bookPS = connection.prepareStatement(
-    "SELECT hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
+    "SELECT registration.registration_id, " +
+    "hotel.hotel_id, hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
     "room.room_number, room.price, room.capacity " +
     "FROM booking " +
     "JOIN registration ON booking.registration_id = registration.registration_id " +
@@ -54,8 +58,8 @@ ResultSet rsBook = bookPS.executeQuery(); //from now on im going to be using rs/
 <body>
 <header>
     <div class="nav-links">
-        <button onclick="window.location.href='../user_findroom.jsp'">Find Room</button>
-        <button onclick="window.location.href='../user_myrooms.jsp'" class="active">My Rooms</button>
+        <button onclick="window.location.href='user_findroom.jsp'">Find Room</button>
+        <button onclick="window.location.href='user_myrooms.jsp'" class="active">My Rooms</button>
         <button onclick="window.location.href='../logout.jsp'">Sign Out</button>
     </div>
 </header>
@@ -76,6 +80,8 @@ ResultSet rsBook = bookPS.executeQuery(); //from now on im going to be using rs/
         int roomNum = rsRent.getInt("room_number");
         double price = rsRent.getDouble("price");
         String capacity = rsRent.getString("capacity");
+        int hotelId = rsRent.getInt("hotel_id");
+        int regId = rsRent.getInt("registration_id");
     %>
 
 
@@ -86,16 +92,17 @@ ResultSet rsBook = bookPS.executeQuery(); //from now on im going to be using rs/
           <span class="room-name"><b><%= hotelName %> <%= roomNum %></b></span>
           <div class="stats">
             <span class="roomstats">$<%= price %><sub>/night</sub></span>
-            <span class="roomstats"><%= capacity %> people</span>
+            <span class="roomstats"><%= capacity %></span>
           </div>
         </div>
         <p class="room-location"><%= city %>, <%= province %>, <%= country %></p>
       </div>
       <div class="room_buttons">
         <button onclick="window.location.href='../room_info.jsp?role=customer2&hotel_id=<%= hotelId %>&room_number=<%= roomNum %>'">View Info</button>
-        <button>Report an issue</button>
+        <button onclick="window.location.href='user_reportissue.jsp?registration_id=<%= regId %>&hotel_id=<%= hotelId %>&room_number=<%= roomNum %>'">Report or Cancel</button>
       </div>
     </div>
+  <% } %>
   </div>
   <br>
   <br>
@@ -107,33 +114,35 @@ ResultSet rsBook = bookPS.executeQuery(); //from now on im going to be using rs/
 
     <%
       while (rsBook.next()) {
-          String hotelName = rsBook.getString("hotel_name");
-          String city = rsBook.getString("city");
-          String province = rsBook.getString("state_province");
-          String country = rsBook.getString("country");
-          int roomNum = rsBook.getInt("room_number");
-          double price = rsBook.getDouble("price");
-          String capacity = rsBook.getString("capacity");
+          String hotelName2 = rsBook.getString("hotel_name");
+          String city2 = rsBook.getString("city");
+          String province2 = rsBook.getString("state_province");
+          String country2 = rsBook.getString("country");
+          int roomNum2 = rsBook.getInt("room_number");
+          double price2 = rsBook.getDouble("price");
+          String capacity2 = rsBook.getString("capacity");
+          int hotelId2 = rsBook.getInt("hotel_id");
+          int regId2 = rsBook.getInt("registration_id");
       %>
 
     <div class="room-card">
       <div class="room-img-placeholder img-holiday"></div>
       <div class="room-body">
         <div class="room_title">
-          <span class="room-name"><b><%= hotelName %> <%= roomNum %></b></span>
+          <span class="room-name"><b><%= hotelName2 %> <%= roomNum2 %></b></span>
           <div class="stats">
-            <span class="roomstats">$<%= price %><sub>/night</sub></span>
-            <span class="roomstats"><%= capacity %> people</span>
+            <span class="roomstats">$<%= price2 %><sub>/night</sub></span>
+            <span class="roomstats"><%= capacity2 %></span>
           </div>
         </div>
-        <p class="room-location"><%= city %>, <%= province %>, <%= country %></p>
+        <p class="room-location"><%= city2 %>, <%= province2 %>, <%= country2 %></p>
       </div>
       <div class="room_buttons">
-        <button onclick="window.location.href='../room_info.jsp?role=customer2&hotel_id=<%= hotelId %>&room_number=<%= roomNum %>'">View Info</button>
-        <button onclick="window.location.href='../user_reportissue.jsp?hotel_id=<%= hotelId %>&room_number=<%= roomNum %>'">Report or Cancel</button>
+        <button onclick="window.location.href='../room_info.jsp?role=customer2&hotel_id=<%= hotelId2 %>&room_number=<%= roomNum2 %>'">View Info</button>
+        <button onclick="window.location.href='user_reportissue.jsp?registration_id=<%= regId2 %>&hotel_id=<%= hotelId2 %>&room_number=<%= roomNum2 %>'">Report or Cancel</button>
       </div>
     </div>
-
+  <% } %>
   </div>
 
 </div>

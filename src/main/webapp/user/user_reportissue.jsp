@@ -1,6 +1,11 @@
+<%@ page import="java.sql.*" %>
+<%@ page import="util.DBConnection" %>
+<%@ page import="util.DatabaseService" %>
+
 <%
 DatabaseService db = new DatabaseService();
-Connection connection = db.getConnection();
+DBConnection dbConnect = new DBConnection();
+Connection connection = dbConnect.getConnection();
 
 String action = request.getParameter("action_type");
 String hotelId = request.getParameter("hotel_id");
@@ -88,9 +93,9 @@ if ("submit".equals(action)) {
     <body>
         <header>
             <div class="nav-links">
-                <button>Find a room</button>
-                <button class="active">My rooms</button>
-                <button>Sign Out</button>
+                <button onclick="window.location.href='user_findroom.jsp'">Find Room</button>
+                <button onclick="window.location.href='user_myrooms.jsp'" class="active">My Rooms</button>
+                <button onclick="window.location.href='../logout.jsp'">Sign Out</button>
             </div>
         </header>
 
@@ -109,13 +114,6 @@ if ("submit".equals(action)) {
 
           <fieldset>
             <div id="date_filter">
-                <label><small>Room number:</small></label>
-                    <div class="search-bar">
-                        <input type="text" value="<%= roomNum %>" readonly> <!--im too lazy to remove this so just putting a fill in-->
-                    </div>
-                </div>
-            <br>
-            <div id="date_filter">
                 <label><small>Action:</small></label>
                     <div class="search-bar">
                         <select name="choice" id="choice" onchange="toggleIssueBox()">
@@ -126,9 +124,11 @@ if ("submit".equals(action)) {
             </div>
             <br>
             <div id="date_filter">
-                  <label><small>Issue:</small></label>
-                  <div class="search-bar">
-                  <input type="text" name="issue">
+                  <div id="issue_box"> <!--note from marianne: THIS IS SO JANK LOL-->
+                      <label><small>Issue:</small></label>
+                      <div class="search-bar">
+                      <input type="text" name="issue">
+                      </div>
                   </div>
             </div>
           </fieldset>
