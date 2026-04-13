@@ -30,25 +30,6 @@ if (request.getMethod().equals("POST")) {
     }
 
     else {
-
-        if (role.equals("MANAGER")) {
-
-            PreparedStatement checkManagers = connection.prepareStatement(
-                "SELECT COUNT(*) FROM employee_role INNER JOIN employee ON employee_role.id_number = employee.id_number AND employee_role.id_type = employee.id_type WHERE employee_role.employee_role ILIKE '%MANAGER%' AND employee.hotel_id = ?"
-            );
-
-            checkManagers.setInt(1, hotelId);
-            ResultSet managers = checkManagers.executeQuery();
-            managers.next();
-            int managerCount = managers.getInt(1);
-
-            if (managerCount >= 4) {
-            %>
-                <script>alert("This hotel has reached its maximum of 4 managers. Please delete a manager or add a regular employee.");</script>
-            <%
-            }
-        }
-
         String idType;
         if (country.equals("canada")) { idType = "sin"; }
         else { idType = "ssn"; }
@@ -61,14 +42,40 @@ if (request.getMethod().equals("POST")) {
 
         else {
 
+
             if (db.checkExists(Integer.parseInt(id), idType)) {
-                out.println("<script>alert('A user with this ID already exists.'); window.location='manager_addemployee.jsp';</script>");
+                %>
+                    <script>
+                        alert("A user with this ID already exists.");
+                        window.location.href = "manager_addemployee.jsp";
+                    </script>
+                <%
                 return;
             }
+            try {
+                    if (role.equals("MANAGER")){ //this is also what was breaking the thing on fruther inspection #iamalittlestupid!
+                        db.addNewUser(role, Integer.parseInt(id), idType, firstName, middleName, lastName, Integer.parseInt(streetNumber), streetName, city, province, postalCode, country, hotelId);
+                    }
+                    else{
+                        db.addNewUser("EMPLOYEE", Integer.parseInt(id), idType, firstName, middleName, lastName, Integer.parseInt(streetNumber), streetName, city, province, postalCode, country, null);
 
-            db.addNewUser(role, Integer.parseInt(id), idType, firstName, middleName, lastName, Integer.parseInt(streetNumber), streetName, city, province, postalCode, country, hotelId);
 
-            out.println("<script>alert('Employee added successfully.'); window.location='manager_addemployee.jsp';</script>");
+                    }
+                %>
+                    <script>
+                        alert("User added succesfully!");
+                        window.location.href = "manager_addemployee.jsp";
+                    </script>
+                <%
+            } catch (Exception e){  //to catch the db trigger (THIS IS LITERALLY THE ONLY WAY IT WORKS I CANT FIGURE OUT HOW TO MAKE IT WORK BY COUNTING MANAGERS WITH A QUERY
+                db.removeEmployee(Integer.parseInt(id), idType); //the trigger fires after the employee is added, so just delete them
+                %>
+                <script>
+                    alert("This hotel has reached the maximum number of managers (4). Please add the user as an employee, or delete a manager.");
+                    window.location.href = "manager_addemployee.jsp";
+                </script>
+                <%
+            }
             return;
 
         }

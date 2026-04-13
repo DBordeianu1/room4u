@@ -104,6 +104,7 @@ public class DatabaseService {
         }
     }
 
+    //should work with the trigger now
     public void addNewUser(String role, int idNumber, String idType, String firstName, String middleName, String lastName, int streetNumber, String streetName, String city, String province, String postalCode, String country, Integer hotelId) throws SQLException {
 
         //insert into person first
@@ -141,13 +142,22 @@ public class DatabaseService {
         if (role.equals("EMPLOYEE") || role.equals("MANAGER")) {
 
             //insert into employeee first
-            String insertEmployeeSQL = "INSERT INTO employee (id_number, id_type, hotel_id) VALUES (?, ?, ?)";
-
-            PreparedStatement employee = connection.prepareStatement(insertEmployeeSQL);
-            employee.setInt(1, idNumber);
-            employee.setString(2, idType);
-            employee.setInt(3, hotelId);
-            employee.executeUpdate();
+            //logic to ONLY ADD HOTEL ID IF MANAGER
+            if (role.equals("MANAGER")){
+                String ps = "INSERT INTO employee (id_number, id_type, hotel_id) VALUES (?, ?, ?)";
+                PreparedStatement manager = connection.prepareStatement(ps);
+                manager.setInt(1, idNumber);
+                manager.setString(2, idType);
+                manager.setInt(3, hotelId);
+                manager.executeUpdate();
+            }
+            else{
+                String ps2 = "INSERT INTO employee (id_number, id_type) VALUES (?, ?)";
+                PreparedStatement employee = connection.prepareStatement(ps2);
+                employee.setInt(1, idNumber);
+                employee.setString(2, idType);
+                employee.executeUpdate();
+            }
 
             //to store role
             String insertRoleSQL = "INSERT INTO employee_role (id_number, id_type, employee_role) VALUES (?, ?, ?)";
@@ -155,7 +165,7 @@ public class DatabaseService {
             PreparedStatement psRole = connection.prepareStatement(insertRoleSQL);
             psRole.setInt(1, idNumber);
             psRole.setString(2, idType);
-            psRole.setString(3, role.toLowerCase()); //can be anything
+            psRole.setString(3, role.toLowerCase()); //can be anything but with this function it's always gonna be employee or manager lol
             psRole.executeUpdate();
         }
     }
