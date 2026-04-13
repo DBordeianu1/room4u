@@ -186,7 +186,7 @@ rr.setInt(3, roomNum);
 rr.executeUpdate();
 
 PreparedStatement bk = connection.prepareStatement(
-    "INSERT INTO booking(registration_id, status, booking_date) VALUES (?, 'confirmed', NOW())"
+    "INSERT INTO booking(registration_id, status, booking_date) VALUES (?, 'pending', NOW())"
 );
 bk.setInt(1, regId);
 bk.executeUpdate();

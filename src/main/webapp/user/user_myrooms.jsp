@@ -38,7 +38,7 @@ PreparedStatement bookPS = connection.prepareStatement(
     "JOIN reg_room ON reg_room.registration_id = registration.registration_id " +
     "JOIN room ON room.hotel_id = reg_room.hotel_id AND room.room_number = reg_room.room_number " +
     "JOIN hotel ON hotel.hotel_id = room.hotel_id " +
-    "WHERE makes.id_number = ? AND makes.id_type = ? AND booking.status = 'confirmed'"
+    "WHERE makes.id_number = ? AND makes.id_type = ? AND booking.status = 'pending'"
 );
 bookPS.setInt(1, customerId);
 bookPS.setString(2, idType);

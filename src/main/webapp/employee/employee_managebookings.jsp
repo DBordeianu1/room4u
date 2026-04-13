@@ -44,7 +44,7 @@ PreparedStatement ps = connection.prepareStatement(
     "JOIN reg_room ON reg_room.registration_id = registration.registration_id " +
     "JOIN room ON room.hotel_id = reg_room.hotel_id AND room.room_number = reg_room.room_number " +
     "JOIN hotel ON hotel.hotel_id = reg_room.hotel_id " +
-    "WHERE booking.status ='pending'" + "AND reg_room.hotel_id = ?"
+    "WHERE booking.status ='pending' " + "AND reg_room.hotel_id = ?"
 );
 ps.setInt(1, hotelId);
 ResultSet rs = ps.executeQuery();
@@ -90,6 +90,7 @@ ResultSet rs = ps.executeQuery();
 <div class="glass_container_big">
 
   <h2>Current Bookings</h2>
+  <p>DEBUG: Employee hotel_id = <%= session.getAttribute("hotel_id") %></p>
   <br>
   <div class="rooms-grid">
 
