@@ -223,7 +223,7 @@ select {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50px;
   padding: 10px 40px 10px 16px;
-  color: #EFFFFF;
+  color: black;
   font-size: 13px;
   font-family: "Manrope", sans-serif;
   outline: none;
@@ -241,6 +241,7 @@ select {
 select:focus {
   border-color: rgba(255, 255, 255, 0.3);
   background-color: rgba(255, 255, 255, 0.1);
+  color: black;
 }
 
 hr{

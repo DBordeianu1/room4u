@@ -80,14 +80,9 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         if ("employee".equals(role)) {
             if (renterId.equals(loggedId) && renterType.equals(loggedType)) {
 %>
-             <script>
-                alert("A user with this ID already exists.");
-                window.location.href = "employee_makerental.jsp";
-             </script>
+<script>alert("Employees cannot submit their own rentals.");</script>
 <%
-            }
-            if (!db.checkExists(Integer.parseInt(renterId), renterType)) {
-                db.addNewUser("CUSTOMER", Integer.parseInt(renterId), renterType, first, middle, last, Integer.parseInt(streetNum), streetName, city, province, postal, country, null);
+                return;
             }
 
             finalPrice *= 0.5;
@@ -331,11 +326,11 @@ window.location.href = "employee_managerentals.jsp";
                         <option value="us">United States</option>
                     </select>
                 </div>
+
             </div>
+
         </fieldset>
-        <% if (totalPrice >= 0) { %>
-            <h2><strong>Total Price:</strong> $<%= String.format("%.2f", totalPrice) %></h2>
-        <% } %>
+        <p><b>Final Price: $<%= String.format("%.2f", totalPrice) %></b></p>
         <br>
         <div class="buttons">
             <button type="submit">Create Rental</button>
