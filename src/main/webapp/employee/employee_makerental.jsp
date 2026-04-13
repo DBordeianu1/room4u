@@ -80,7 +80,10 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         if ("employee".equals(role)) {
             if (renterId.equals(loggedId) && renterType.equals(loggedType)) {
 %>
-<script>alert("Employees cannot submit their own rentals.");</script>
+        <script>
+            alert("Employees cannot submit their own rentals.");
+            window.location.href = "employee_findroom.jsp";
+        </script>
 <%
                 return;
             }
