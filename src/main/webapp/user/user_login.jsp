@@ -35,7 +35,7 @@ if (request.getMethod().equals("POST")) {
 
         else {
             session.setAttribute("user_id", id);
-            response.sendRedirect("user_findrooms.jsp");
+            response.sendRedirect("user_findroom.jsp");
             return;
         }
     }

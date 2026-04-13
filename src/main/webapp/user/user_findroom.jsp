@@ -1,16 +1,18 @@
 <%@ page import="java.sql.*" %>
+<%@ page import="util.DBConnection" %>
 <%@ page import="util.DatabaseService" %>
 
 <%
 DatabaseService db = new DatabaseService();
-Connection connection = db.getConnection();
+DBConnection dbConnect = new DBConnection();
+Connection connection = dbConnect.getConnection();
 
 String country = request.getParameter("country");
 String start = request.getParameter("trip-start");
 String end = request.getParameter("trip-end");
 String capacity = request.getParameter("capacity");
 String category = request.getParameter("category");
-String chainName = request.getParameter("chain_name");
+String hotelName = request.getParameter("chain_name");
 String hotelCapacity = request.getParameter("hotel_capacity");
 String minPrice = request.getParameter("min_price");
 String maxPrice = request.getParameter("max_price");
@@ -21,7 +23,7 @@ boolean noFilters =
     (country == null || country.isEmpty()) &&
     (capacity == null || capacity.isEmpty()) &&
     (category == null || category.isEmpty()) &&
-    (chainName == null || chainName.isEmpty()) &&
+    (hotelName == null || hotelName.isEmpty()) &&
     (hotelCapacity == null || hotelCapacity.isEmpty()) &&
     (minPrice == null || minPrice.isEmpty()) &&
     (maxPrice == null || maxPrice.isEmpty());
@@ -31,44 +33,46 @@ ResultSet rs = null;
 if (hasFilters) {
 
     //will exclude rooms that are already booked
-    String sql =
-        "SELECT hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
+    //also i used stringbuilder here because i kept hitting errors when i did += and a regular string
+    StringBuilder sql = new StringBuilder(
+        "SELECT hotel.hotel_id, hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
         "room.room_number, room.price, room.capacity " +
         "FROM hotel " +
         "JOIN room ON hotel.hotel_id = room.hotel_id " +
         "JOIN hotel_chain ON hotel.chain_id = hotel_chain.chain_id " +
-        "AND room.room_number NOT IN ( " +
-        "    SELECT reg_room.room_number " +
-        "    FROM reg_room " +
-        "    JOIN registration ON reg_room.registration_id = registration.registration_id " +
-        "    LEFT JOIN booking ON registration.registration_id = booking.registration_id " +
-        "    LEFT JOIN renting ON registration.registration_id = renting.registration_id " +
-        "    WHERE (booking.status = 'confirmed' OR renting.registration_id IS NOT NULL) " +
-        ") ";
+        "WHERE (hotel.hotel_id, room.room_number) NOT IN ( " +
+        "    SELECT rr.hotel_id, rr.room_number " +
+        "    FROM reg_room rr " +
+        "    JOIN registration reg ON rr.registration_id = reg.registration_id " +
+        "    LEFT JOIN booking b ON reg.registration_id = b.registration_id " +
+        "    LEFT JOIN renting rent ON reg.registration_id = rent.registration_id " +
+        "    WHERE (b.status = 'confirmed' OR rent.registration_id IS NOT NULL) " +
+        ") "
+    );
 
     // only apply filters if user actually entered something
     if (!noFilters) {
 
         if (country != null && !country.isEmpty())
-            sql.append("AND h.country = ? ");
+            sql.append("AND hotel.country = ? ");
 
         if (capacity != null && !capacity.isEmpty())
-            sql.append("AND r.capacity = ? ");
+            sql.append("AND room.capacity = ? ");
 
         if (category != null && !category.isEmpty())
-            sql.append("AND h.classification = ? ");
+            sql.append("AND hotel.classification = ? ");
 
-        if (chainName != null && !chainName.isEmpty())
-            sql.append("AND LOWER(hc.chain_name) LIKE LOWER(?) ");
+        if (hotelName != null && !hotelName.isEmpty())
+            sql.append("AND LOWER(hotel.hotel_name) LIKE LOWER(?) ");
 
         if (hotelCapacity != null && !hotelCapacity.isEmpty())
-            sql.append("AND (SELECT COUNT(*) FROM room rr WHERE rr.hotel_id = h.hotel_id) >= ? ");
+            sql.append("AND (SELECT COUNT(*) FROM room rr WHERE rr.hotel_id = hotel.hotel_id) >= ? ");
 
         if (minPrice != null && !minPrice.isEmpty())
-            sql.append("AND r.price >= ? ");
+            sql.append("AND room.price >= ? ");
 
         if (maxPrice != null && !maxPrice.isEmpty())
-            sql.append("AND r.price <= ? ");
+            sql.append("AND room.price <= ? ");
     }
 
     PreparedStatement ps = connection.prepareStatement(sql.toString());
@@ -86,8 +90,8 @@ if (hasFilters) {
         if (category != null && !category.isEmpty())
             ps.setInt(idx++, Integer.parseInt(category));
 
-        if (chainName != null && !chainName.isEmpty())
-            ps.setString(idx++, "%" + chainName + "%");
+        if (hotelName != null && !hotelName.isEmpty())
+            ps.setString(idx++, "%" + hotelName + "%");
 
         if (hotelCapacity != null && !hotelCapacity.isEmpty())
             ps.setInt(idx++, Integer.parseInt(hotelCapacity));
@@ -126,7 +130,7 @@ if (hasFilters) {
 
   <h2>Search for a room</h2>
   <br>
-  <form method="post" action="user_findrooms.jsp">
+  <form method="post" action="user_findroom.jsp">
       <fieldset id="filters">
 
           <div id="id_choices">
@@ -146,8 +150,15 @@ if (hasFilters) {
               <input type="datetime-local" id="end" name="trip-end" min="2026-01-01" max="2050-12-31" />
             </div>
             <div id="date_filter">
-              <label><small>Capacity:</small></label>
-              <input type="number" id="capacity" name="capacity" min="1" max="100" />
+                <label><small>Capacity:</small></label>
+                    <select name="capacity">
+                        <option value="single">Single</option>
+                        <option value="double">Double</option>
+                        <option value="suite">Suite</option>
+                        <option value="family">Family</option>
+                        <option value="royal">Royal</option>
+                        <option value="penthouse">Penthouse</option>
+                   </select>
             </div>
             <div id="date_filter">
               <label><small>Star rating</small></label>
@@ -189,23 +200,24 @@ if (hasFilters) {
     <%
     if (hasFilters && rs != null) {
         while (rs.next()) {
-            String hotelName = rs.getString("hotel_name");
+            String hotelName2 = rs.getString("hotel_name");
             String cityVal = rs.getString("city");
             String stateVal = rs.getString("state_province");
             String countryVal = rs.getString("country");
             int roomNum = rs.getInt("room_number");
-            float price = rs.getDouble("price");
+            double price = rs.getDouble("price");
             String roomCapacity = rs.getString("capacity");
+            int hotelId = rs.getInt("hotel_id");
     %>
 
     <div class="room-card">
       <div class="room-img-placeholder"></div>
       <div class="room-body">
         <div class="room_title">
-          <span class="room-name"><b><%= hotelName %> <%= roomNum %></b></span>
+          <span class="room-name"><b><%= hotelName2 %> <%= roomNum %></b></span>
           <div class="stats">
             <span class="roomstats"><%= price %><sub>/night</sub></span>
-            <span class="roomstats"><%= roomCapacity %> people</span>
+            <span class="roomstats"><%= roomCapacity %></span>
           </div>
         </div>
         <p class="room-location"><%= cityVal %>, <%= stateVal %>, <%= countryVal %></p>
