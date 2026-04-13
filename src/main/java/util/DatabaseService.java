@@ -114,7 +114,6 @@ public class DatabaseService {
         }
     }
 
-
     public void addNewUser(String role, int idNumber, String idType, String firstName, String middleName, String lastName, int streetNumber, String streetName, String city, String province, String postalCode, String country, Integer hotelId) throws SQLException {
 
         //insert into person first

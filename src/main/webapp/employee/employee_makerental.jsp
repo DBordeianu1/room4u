@@ -1,9 +1,11 @@
 <%@ page import="java.sql.*" %>
+<%@ page import="util.DBConnection" %>
 <%@ page import="util.DatabaseService" %>
 
 <%
 DatabaseService db = new DatabaseService();
-Connection connection = db.getConnection();
+DBConnection dbConnect = new DBConnection();
+Connection connection = dbConnect.getConnection();
 
 String loggedId = (String) session.getAttribute("id_number");
 String loggedType = (String) session.getAttribute("id_type");
@@ -29,8 +31,8 @@ String country = request.getParameter("country");
 double totalPrice = 0;
 
 if (start != null && end != null) {
-    Timestamp s = Timestamp.valueOf(start.replace("T"," ") + ":00");
-    Timestamp e = Timestamp.valueOf(end.replace("T"," ") + ":00");
+    Timestamp s = Timestamp.valueOf(start.replace("T", " ") + ":00");
+    Timestamp e = Timestamp.valueOf(end.replace("T", " ") + ":00");
     long diff = e.getTime() - s.getTime();
     long nights = diff / (1000 * 60 * 60 * 24);
 
@@ -40,6 +42,7 @@ if (start != null && end != null) {
     ps.setInt(1, Integer.parseInt(hotelId));
     ps.setInt(2, Integer.parseInt(roomNum));
     ResultSet rs = ps.executeQuery();
+
     double base = 0;
     if (rs.next()) base = rs.getDouble("price");
 
@@ -57,8 +60,8 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 <%
     } else {
 
-        Timestamp startTS = Timestamp.valueOf(start.replace("T"," ") + ":00");
-        Timestamp endTS = Timestamp.valueOf(end.replace("T"," ") + ":00");
+        Timestamp startTS = Timestamp.valueOf(start.replace("T", " ") + ":00");
+        Timestamp endTS = Timestamp.valueOf(end.replace("T", " ") + ":00");
 
         long diff = endTS.getTime() - startTS.getTime();
         long nights = diff / (1000 * 60 * 60 * 24);
@@ -69,11 +72,11 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         psPrice.setInt(1, Integer.parseInt(hotelId));
         psPrice.setInt(2, Integer.parseInt(roomNum));
         ResultSet rsP = psPrice.executeQuery();
+
         double basePrice = 0;
         if (rsP.next()) basePrice = rsP.getDouble("price");
 
         double finalPrice = basePrice * nights;
-
         if ("employee".equals(role)) {
             if (renterId.equals(loggedId) && renterType.equals(loggedType)) {
 %>
@@ -81,7 +84,9 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 <%
                 return;
             }
+
             finalPrice *= 0.5;
+
         } else {
             if (first == null || first.isEmpty() || last == null || last.isEmpty() ||
                 streetNum == null || streetNum.isEmpty() || streetName == null || streetName.isEmpty() ||
@@ -92,53 +97,24 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 <%
                 return;
             }
-
-            boolean valid = true;
-
-            if ("sin".equals(renterType)) {
-                if (!renterId.matches("\\d{9}")) valid = false;
-                else {
-                    int sum = 0;
-                    for (int i = 0; i < renterId.length(); i++) {
-                        int d = Character.getNumericValue(renterId.charAt(i));
-                        if (i % 2 == 1) {
-                            d *= 2;
-                            if (d > 9) d -= 9;
-                        }
-                        sum += d;
-                    }
-                    if (sum % 10 != 0) valid = false;
-                }
-            } else {
-                if (!renterId.matches("\\d{9}")) valid = false;
-                else {
-                    String a = renterId.substring(0,3);
-                    String g = renterId.substring(3,5);
-                    String s = renterId.substring(5,9);
-                    if (a.equals("000") || a.equals("666") || a.charAt(0)=='9') valid = false;
-                    if (g.equals("00")) valid = false;
-                    if (s.equals("0000")) valid = false;
-                }
-            }
-
+            boolean valid = db.validateID(renterType, renterId);
             if (!valid) {
 %>
 <script>alert("Invalid SIN/SSN.");</script>
 <%
                 return;
             }
-
-            db.addNewUser("CUSTOMER",
-                Integer.parseInt(renterId),
-                renterType,
-                first, middle, last,
-                Integer.parseInt(streetNum),
-                streetName, city, province, postal, country, null
-            );
-
+            if (!db.checkExists(Integer.parseInt(renterId), renterType)) {
+                db.addNewUser("CUSTOMER",
+                    Integer.parseInt(renterId),
+                    renterType,
+                    first, middle, last,
+                    Integer.parseInt(streetNum),
+                    streetName, city, province, postal, country, null
+                );
+            }
             finalPrice *= 1.15;
         }
-
         PreparedStatement reg = connection.prepareStatement(
             "INSERT INTO registration(start_date, end_date, is_archived) VALUES (?, ?, false)",
             Statement.RETURN_GENERATED_KEYS
@@ -146,6 +122,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         reg.setTimestamp(1, startTS);
         reg.setTimestamp(2, endTS);
         reg.executeUpdate();
+
         ResultSet regKeys = reg.getGeneratedKeys();
         regKeys.next();
         int regId = regKeys.getInt(1);
@@ -167,15 +144,17 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         rr.executeUpdate();
 
         PreparedStatement rent = connection.prepareStatement(
-            "INSERT INTO renting(registration_id, rental_date) VALUES (?, NOW())"
+            "INSERT INTO renting(registration_id, paid, renting_date) VALUES (?, true, NOW())"
         );
         rent.setInt(1, regId);
         rent.executeUpdate();
 %>
+
 <script>
 alert("Rental created. Final price: $<%= finalPrice %>");
-window.location.href = "employee_rentals.jsp";
+window.location.href = "employee_managerentals.jsp";
 </script>
+
 <%
         return;
     }
@@ -351,11 +330,8 @@ window.location.href = "employee_rentals.jsp";
             </div>
 
         </fieldset>
-
-        <br>
-
         <p><b>Final Price: $<%= String.format("%.2f", totalPrice) %></b></p>
-
+        <br>
         <div class="buttons">
             <button type="submit">Create Rental</button>
         </div>
