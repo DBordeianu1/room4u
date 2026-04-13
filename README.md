@@ -11,7 +11,8 @@ It covers the full pipeline from ER Diagram to Relational Schema to a fully impl
 - **Database:** PostgreSQL
 - **Backend:** Java 17, JSP, JDBC
 - **Frontend:** HTML5, CSS3
-- **Other:** Python (data loading scripts, with pandas and openpyxl libraries), Figma (UI prototype), Apache Maven & Tomcat
+- **Build:** Apache Maven & Tomcat
+- **Tools:** IntelliJ, Python (data loading script, with pandas and openpyxl libraries), Figma (UI prototype)
 
 ---
 ## Getting Started
@@ -82,6 +83,31 @@ The following views were implemented:
 **If the script ran successfully, you should see a green success notification in pgAdmin's message panel.*
 
 ***Note that `tests.sql` demonstrates trigger behavior through before/after queries. Running them will permanently delete some data. To reverse it, you'll have to go through steps 4 to 8 again.*
+
+### Running the app
+**Prerequisites:**
+- Java 17 installed
+- Apache Maven installed
+- Completed "[Setting up the database](https://github.com/DBordeianu1/room4u?tab=readme-ov-file#setting-up-the-database)" section
+
+**Step 1: Navigate to the project root**
+
+Make sure you are in the `room4u/` directory (where `pom.xml` is located):
+```
+cd path/to/room4u
+```
+
+**Step 2: Start the application**
+```
+mvn tomcat7:run
+```
+
+**Step 3: Open the app in your browser**
+
+The frontend will be present at:
+```
+http://localhost:8080/room4u/
+```
 
 ---
 

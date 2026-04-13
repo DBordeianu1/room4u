@@ -41,5 +41,5 @@ build/
 ### database info ###
 src/main/resources/db.properties
 
-### csv files since there is a Python script you can run for that###
+### csv files since there is a Python script you can run for that ###
 sql/csv_files/
