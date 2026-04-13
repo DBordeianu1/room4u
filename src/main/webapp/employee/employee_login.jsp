@@ -1,5 +1,6 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="util.DatabaseService" %>
+<%@ page import="util.DBConnection" %>
 
 <%
 String id = request.getParameter("id_number");
@@ -7,7 +8,9 @@ String country = request.getParameter("country");
 String role = request.getParameter("employeetype");
 
 if (request.getMethod().equals("POST")) {
-
+    DBConnection dbConn = new DBConnection();
+    DatabaseService db = new DatabaseService();
+    Connection connection = dbConn.getConnection();
     if (id == null || id.isEmpty()) {
 %>
         <script>alert("Please fill out all input fields.");</script>
@@ -15,8 +18,6 @@ if (request.getMethod().equals("POST")) {
     }
 
     else {
-
-        DatabaseService db = new DatabaseService();
         String idType;
 
         if (country.equals("canada")) {
@@ -33,7 +34,9 @@ if (request.getMethod().equals("POST")) {
         }
 
         else {
+            int hotel_id = db.getHotelId(role.toUpperCase(), connection, Integer.parseInt(id), idType);
             session.setAttribute("user_id", id);
+            session.setAttribute("hotel_id", hotel_id);
 
             if(role.equals("manager")){
                 response.sendRedirect("../manager/manager_addemployee.jsp");

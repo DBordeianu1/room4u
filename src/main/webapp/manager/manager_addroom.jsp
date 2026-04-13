@@ -7,7 +7,7 @@ DatabaseService db = new DatabaseService();
 DBConnection dbConnect = new DBConnection();
 Connection connection = dbConnect.getConnection();
 
-String hotelId = request.getParameter("hotel_id");
+Integer hotelId = (Integer) session.getAttribute("hotel_id");
 String roomNum = request.getParameter("room_number");
 String price = request.getParameter("price");
 String capacity = request.getParameter("capacity");
@@ -16,11 +16,7 @@ String view = request.getParameter("view");
 
 if ("POST".equalsIgnoreCase(request.getMethod())) {
 
-    if (hotelId == null || hotelId.isEmpty() ||
-        roomNum == null || roomNum.isEmpty() ||
-        price == null || price.isEmpty() ||
-        capacity == null || capacity.isEmpty() ||
-        extendable == null || view == null) {
+    if (roomNum == null || roomNum.isEmpty() || price == null || price.isEmpty() || capacity == null || capacity.isEmpty() || extendable == null || view == null) {
 %>
 <script>alert("Please fill out all fields.");</script>
 <%
@@ -29,7 +25,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
         PreparedStatement check = connection.prepareStatement(
             "SELECT 1 FROM room WHERE hotel_id=? AND room_number=?"
         );
-        check.setInt(1, Integer.parseInt(hotelId));
+        check.setInt(1, hotelId);
         check.setInt(2, Integer.parseInt(roomNum));
         ResultSet rs = check.executeQuery();
 
@@ -42,7 +38,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
             PreparedStatement insertRoom = connection.prepareStatement(
                 "INSERT INTO room(hotel_id, room_number, price, capacity, extendable) VALUES (?, ?, ?, ?, ?)"
             );
-            insertRoom.setInt(1, Integer.parseInt(hotelId));
+            insertRoom.setInt(1, hotelId);
             insertRoom.setInt(2, Integer.parseInt(roomNum));
             insertRoom.setDouble(3, Double.parseDouble(price));
             insertRoom.setString(4, capacity);
@@ -52,7 +48,7 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
             PreparedStatement insertView = connection.prepareStatement(
                 "INSERT INTO room_view(hotel_id, room_number, view_of_room) VALUES (?, ?, ?)"
             );
-            insertView.setInt(1, Integer.parseInt(hotelId));
+            insertView.setInt(1, hotelId);
             insertView.setInt(2, Integer.parseInt(roomNum));
             insertView.setString(3, view);
             insertView.executeUpdate();

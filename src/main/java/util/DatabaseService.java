@@ -14,6 +14,45 @@ public class DatabaseService {
         }
     }
 
+    //login stuff
+
+    public int getHotelId(String role, Connection connection, int id_number, String id_type) throws SQLException {
+        if (role.equals("MANAGER")) {
+            PreparedStatement ps = connection.prepareStatement("SELECT hotel_id FROM employee WHERE id_number = ? AND id_type = ?");
+            ps.setInt(1, id_number);
+            ps.setString(2, id_type);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("hotel_id");
+            }
+            return -1;
+        }
+        else {
+            PreparedStatement ps = connection.prepareStatement("SELECT manager_id_number, manager_id_type FROM supervises WHERE employee_id_number = ? AND employee_id_type = ?");
+            ps.setInt(1, id_number);
+            ps.setString(2, id_type);
+            ResultSet rs = ps.executeQuery();
+
+            if (!rs.next()) {
+                return -1;
+            }
+
+            int manager_id_number = rs.getInt("manager_id_number");
+            String manager_id_type = rs.getString("manager_id_type");
+
+            PreparedStatement ps2 = connection.prepareStatement("SELECT hotel_id FROM employee WHERE id_number = ? AND id_type = ?");
+            ps2.setInt(1, manager_id_number);
+            ps2.setString(2, manager_id_type);
+            ResultSet rs2 = ps2.executeQuery();
+
+            if (rs2.next()) {
+                return rs2.getInt("hotel_id");
+            }
+
+            return -1;
+        }
+    }
+
     public boolean loginCustomer(int idNumber, String idType) {
         try {
             String query = "SELECT * FROM customer WHERE id_number = ? AND id_type = ?";
@@ -36,7 +75,7 @@ public class DatabaseService {
 
     public boolean loginEmployee(int idNumber, String idType) {
         try {
-            String query = "SELECT * FROM employee WHERE id_number = ? AND id_type = ?";
+            String query = "SELECT * FROM employee_role WHERE id_number = ? AND id_type = ?";
             PreparedStatement ps = connection.prepareStatement(query);
 
             ps.setInt(1, idNumber);

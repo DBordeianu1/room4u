@@ -80,7 +80,7 @@ if (request.getMethod().equals("POST")) {
     <h2>Remove Employee/Customer</h2>
     <br>
 
-    <form method="post" action="manager_remove.jsp">
+    <form method="post" action="manager_removeemployee.jsp">
 
     <fieldset>
       <div id="date_filter">
@@ -109,7 +109,7 @@ if (request.getMethod().equals("POST")) {
         </div>
     </fieldset>
 
-    <div class="buttons"><button type="submit">Submit Report</button></div>
+    <div class="buttons"><button type="submit">Remove Employee</button></div>
 
     </form>
 

@@ -18,45 +18,46 @@ String city = request.getParameter("user_city");
 String province = request.getParameter("user_province");
 String postalCode = request.getParameter("user_postalcode");
 String role = request.getParameter("role");
-String hotelIdParam = request.getParameter("hotel_id");
-
-Integer hotelId = null;
-if (hotelIdParam != null && !hotelIdParam.isEmpty()) {
-    hotelId = Integer.parseInt(hotelIdParam);
-}
+Integer hotelId = (Integer) session.getAttribute("hotel_id");
 
 if (request.getMethod().equals("POST")) {
-    if (id == null || id.isEmpty() || country == null || country.isEmpty() || firstName == null || firstName.isEmpty() || lastName == null || lastName.isEmpty() || streetNumber == null || streetNumber.isEmpty() || streetName == null || streetName.isEmpty() || city == null || city.isEmpty() || province == null || province.isEmpty() || postalCode == null || postalCode.isEmpty()) {
-%>
+
+    if (id == null || id.isEmpty() || firstName == null || firstName.isEmpty() || lastName == null || lastName.isEmpty() || streetNumber == null || streetNumber.isEmpty() || streetName == null || streetName.isEmpty() || city == null || city.isEmpty() || province == null || province.isEmpty() || postalCode == null || postalCode.isEmpty()) {
+    %>
         <script>alert("Please fill out all input fields.");</script>
-<%
+    <%
+        return;
     }
-    else{
-        if ("MANAGER".equals(role)){
-            PreparedStatement checkManagers = connection.prepareStatement("SELECT COUNT(*) " + "FROM employee_role " + "INNER JOIN employee " + "ON employee_role.id_number = employee.id_number " + "AND employee_role.id_type = employee.id_type " + "WHERE employee_role.employee_role = 'MANAGER' " + "AND employee.hotel_id = ?");
+
+    else {
+
+        if (role.equals("MANAGER")) {
+
+            PreparedStatement checkManagers = connection.prepareStatement(
+                "SELECT COUNT(*) FROM employee_role INNER JOIN employee ON employee_role.id_number = employee.id_number AND employee_role.id_type = employee.id_type WHERE employee_role.employee_role ILIKE '%MANAGER%' AND employee.hotel_id = ?"
+            );
+
             checkManagers.setInt(1, hotelId);
             ResultSet managers = checkManagers.executeQuery();
             managers.next();
             int managerCount = managers.getInt(1);
 
             if (managerCount >= 4) {
-%>
-                <script>
-                alert("This hotel has reached its maximum of 4 managers. Please delete a manager or add a regular employee.");
-                </script>
-<%
-                return;
+            %>
+                <script>alert("This hotel has reached its maximum of 4 managers. Please delete a manager or add a regular employee.");</script>
+            <%
             }
         }
-        else {
-            String idType;
-            if (country.equals("canada")) { idType = "sin"; }
-            else { idType = "ssn"; }
-            if (!(db.validateID(idType, id))) { //moved to an external function to make cleaner
-%>
-                <script>alert("Please enter a valid SIN or SSN.");</script>
-<%
-            }
+
+        String idType;
+        if (country.equals("canada")) { idType = "sin"; }
+        else { idType = "ssn"; }
+
+        if (!(db.validateID(idType, id))) {
+        %>
+            <script>alert("Please enter a valid SIN or SSN.");</script>
+        <%
+        }
 
         else {
 
@@ -65,18 +66,12 @@ if (request.getMethod().equals("POST")) {
                 return;
             }
 
-            db.addNewUser(role, Integer.parseInt(id), idType, firstName, middleName, lastName,
-                          Integer.parseInt(streetNumber), streetName, city, province, postalCode,
-                          country, hotelId);
-            %>
-            <script>
-                alert("Employee added successfully.");
-                document.querySelector('form').reset();
-            </script>
-            <%
-            return;
-        }
+            db.addNewUser(role, Integer.parseInt(id), idType, firstName, middleName, lastName, Integer.parseInt(streetNumber), streetName, city, province, postalCode, country, hotelId);
 
+            out.println("<script>alert('Employee added successfully.'); window.location='manager_addemployee.jsp';</script>");
+            return;
+
+        }
     }
 }
 %>
@@ -194,9 +189,6 @@ if (request.getMethod().equals("POST")) {
             <option value="us">United States</option>
           </select>
       </div>
-
-      <input type="hidden" name="hotel_id" value="1">
-
     </fieldset>
 
     <div class="buttons"><button type="submit">Add Employee</button></div>
