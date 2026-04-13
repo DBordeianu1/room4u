@@ -38,7 +38,7 @@ BEGIN
 		RETURN NEW;
 	
 	ELSE
-		IF (SELECT COUNT(*) FROM employee WHERE hotel_id=OLD.hotel_id)=0 THEN
+		IF OLD.hotel_id IS NOT NULL AND (SELECT COUNT(*) FROM employee WHERE hotel_id=OLD.hotel_id)=0 THEN
 			RAISE EXCEPTION 'Hotel must have at least 1 manager';
 		END IF;
 		RETURN OLD;
