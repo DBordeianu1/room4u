@@ -1,10 +1,13 @@
 <%@ page import="java.sql.*" %>
+<%@ page import="util.DBConnection" %>
 <%@ page import="util.DatabaseService" %>
 
 <%
 DatabaseService db = new DatabaseService();
-Connection connection = db.getConnection(); //note to marianne: maybe make this variable consistent (choose between conneciton or conn pls)
+DBConnection dbConnect = new DBConnection();
+Connection connection = dbConnect.getConnection();
 
+Integer hotelId = (Integer) session.getAttribute("hotel_id");
 String action = request.getParameter("action");
 String regId = request.getParameter("registration_id");
 
@@ -17,7 +20,7 @@ if ("convert".equals(action) && regId != null) {
     cancel.executeUpdate();
 
     PreparedStatement rent = connection.prepareStatement(
-        "INSERT INTO renting(registration_id, rental_date) VALUES (?, NOW())"
+        "INSERT INTO renting(registration_id, paid, renting_date) VALUES (?, true, NOW())"
     );
     rent.setInt(1, Integer.parseInt(regId));
     rent.executeUpdate();
@@ -41,8 +44,9 @@ PreparedStatement ps = connection.prepareStatement(
     "JOIN reg_room ON reg_room.registration_id = registration.registration_id " +
     "JOIN room ON room.hotel_id = reg_room.hotel_id AND room.room_number = reg_room.room_number " +
     "JOIN hotel ON hotel.hotel_id = reg_room.hotel_id " +
-    "WHERE booking.status='confirmed'"
+    "WHERE booking.status ='pending'" + "AND reg_room.hotel_id = ?"
 );
+ps.setInt(1, hotelId);
 ResultSet rs = ps.executeQuery();
 %>
 
@@ -103,7 +107,7 @@ ResultSet rs = ps.executeQuery();
         String country = rs.getString("country");
         int roomNum = rs.getInt("room_number");
         double price = rs.getDouble("price");
-        int capacity = rs.getInt("capacity");
+        String capacity = rs.getString("capacity");
         int registrationId = rs.getInt("registration_id");
         String idNum = rs.getString("id_number");
         String idType = rs.getString("id_type");
@@ -127,6 +131,7 @@ ResultSet rs = ps.executeQuery();
         <button onclick="convertRental('<%= registrationId %>')">Convert to Rental</button>
       </div>
     </div>
+  <% } %>
   </div>
 
 </div>
