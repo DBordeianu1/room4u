@@ -324,6 +324,11 @@ hr{
   padding: 0 16px;
 }
 
+#id_choices {
+  display:flex;
+  flex-direction: row;
+}
+
 
 
 
