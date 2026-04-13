@@ -90,7 +90,6 @@ ResultSet rs = ps.executeQuery();
 <div class="glass_container_big">
 
   <h2>Current Bookings</h2>
-  <p>DEBUG: Employee hotel_id = <%= session.getAttribute("hotel_id") %></p>
   <br>
   <div class="rooms-grid">
 

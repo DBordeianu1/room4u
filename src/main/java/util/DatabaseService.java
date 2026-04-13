@@ -163,6 +163,7 @@ public class DatabaseService {
                 worksat.setInt(1, idNumber);
                 worksat.setString(2, idType);
                 worksat.setInt(3, hotelId);
+                worksat.executeUpdate();
             }
 
             //to store role
@@ -178,7 +179,7 @@ public class DatabaseService {
 
     public boolean removeEmployee(int idNumber, String idType) {
         try {
-            String sql = "DELETE FROM person WHERE id_number = ? AND id_type = ?";
+            String sql = "DELETE FROM employee WHERE id_number=? AND id_type=?";
             PreparedStatement ps = connection.prepareStatement(sql);
 
             ps.setInt(1, idNumber);

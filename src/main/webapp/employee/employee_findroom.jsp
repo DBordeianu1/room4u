@@ -164,7 +164,7 @@ if (hasFilters) {
         </div>
         <div class="room_buttons">
           <button onclick="window.location.href='../room_info.jsp?role=employee1&hotel_id=<%= hotelId %>&room_number=<%= roomNum %>'">View Info</button>
-          <button onclick="window.location.href='employee_makerental.jsp?hotel_id=<%= hotelId2 %>&room_number=<%= roomNum %>&start=<%= start %>&end=<%= end %>'">Register Rental</button>
+          <button onclick="window.location.href='employee_makerental.jsp?hotel_id=<%= hotelId2 %>&room_number=<%= roomNum %>'">Register Rental</button>
         </div>
       </div>
 
