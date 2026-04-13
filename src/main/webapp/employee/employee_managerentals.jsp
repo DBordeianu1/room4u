@@ -35,12 +35,6 @@ ResultSet rs = ps.executeQuery();
     <link rel="stylesheet" href="../styles.css">
 
     <script>
-            function showCustomerInfo(id, type) {
-                window.open("employee_customerinfo.jsp?id=" + id + "&type=" + type,
-                    "Customer Info",
-                    "width=500,height=600");
-            }
-
             function showRentalInfo(regId) {
                 window.open("employee_rentalinfo.jsp?registration_id=" + regId,
                     "Rental Info",
@@ -92,7 +86,6 @@ ResultSet rs = ps.executeQuery();
         <p class="room-location"><%= city %>, <%= province %>, <%= country %></p>
       </div>
       <div class="room_buttons">
-        <button onclick="showCustomerInfo('<%= idNum %>', '<%= idType %>')">Customer Info</button>
         <button onclick="window.location.href='../room_info.jsp?role=employee3&hotel_id=<%= hotelId %>&room_number=<%= roomNum %>'">View Info</button>
       </div>
     </div>
