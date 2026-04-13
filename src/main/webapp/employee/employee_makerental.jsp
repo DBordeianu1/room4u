@@ -16,7 +16,7 @@ String start = request.getParameter("start");
 String end = request.getParameter("end");
 String renterId = request.getParameter("renter_id");
 String renterType = request.getParameter("renter_type");
-String role = request.getParameter("role");
+String role = "customer";
 
 String first = request.getParameter("first");
 String middle = request.getParameter("middle");
@@ -174,14 +174,6 @@ window.location.href = "employee_managerentals.jsp";
     <title>Create Rental</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
-
-    <script>
-        function toggleCustomer() {
-            const role = document.getElementById("role").value;
-            document.getElementById("customer_fields").style.display =
-                role === "customer" ? "block" : "none";
-        }
-    </script>
 </head>
 <body>
 
@@ -236,16 +228,6 @@ window.location.href = "employee_managerentals.jsp";
                 <select name="renter_type">
                     <option value="sin">SIN</option>
                     <option value="ssn">SSN</option>
-                </select>
-            </div>
-
-            <br>
-
-            <div id="date_filter">
-                <label><small>Renter Role:</small></label>
-                <select name="role" id="role" onchange="toggleCustomer()">
-                    <option value="customer">Customer</option>
-                    <option value="employee">Employee</option>
                 </select>
             </div>
 

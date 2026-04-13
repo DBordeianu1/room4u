@@ -99,11 +99,11 @@ if (doSearch) {
                 </div>
                 <div id="date_filter">
                   <label><small>Min. price</small></label>
-                  <input type="number" id="min_price" name="min_price" min="0" max="100000" />
+                  <input type="number" id="min_price" name="min_price" min="0" max="100000" required />
                 </div>
                 <div id="date_filter">
                   <label><small>Max. price</small></label>
-                  <input type="number" id="max_price" name="max_price" min="0" max="100000" />
+                  <input type="number" id="max_price" name="max_price" min="0" max="100000" required/>
                 </div>
           </div>
       </fieldset>
