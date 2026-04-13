@@ -1,9 +1,12 @@
 <%@ page import="java.sql.*" %>
+<%@ page import="util.DBConnection" %>
 <%@ page import="util.DatabaseService" %>
 
 <%
 DatabaseService db = new DatabaseService();
-Connection connection = db.getConnection();
+DBConnection dbConnect = new DBConnection();
+Connection connection = dbConnect.getConnection();
+Integer hotelId = (Integer) session.getAttribute("hotel_id");
 
 PreparedStatement ps = connection.prepareStatement(
     "SELECT hotel.hotel_name, hotel.city, hotel.state_province, hotel.country, " +
@@ -15,8 +18,9 @@ PreparedStatement ps = connection.prepareStatement(
     "JOIN makes ON makes.registration_id = registration.registration_id " +
     "JOIN reg_room ON reg_room.registration_id = registration.registration_id " +
     "JOIN room ON room.hotel_id = reg_room.hotel_id AND room.room_number = reg_room.room_number " +
-    "JOIN hotel ON hotel.hotel_id = reg_room.hotel_id"
+    "JOIN hotel ON hotel.hotel_id = reg_room.hotel_id " + "WHERE reg_room.hotel_id = ?"
 );
+ps.setInt(1, hotelId);
 ResultSet rs = ps.executeQuery();
 %>
 
@@ -69,7 +73,7 @@ ResultSet rs = ps.executeQuery();
         String country = rs.getString("country");
         int roomNum = rs.getInt("room_number");
         double price = rs.getDouble("price");
-        int capacity = rs.getInt("capacity");
+        String capacity = rs.getString("capacity");
         int registrationId = rs.getInt("registration_id");
         String idNum = rs.getString("id_number");
         String idType = rs.getString("id_type");
@@ -82,7 +86,7 @@ ResultSet rs = ps.executeQuery();
           <span class="room-name"><b><%= hotelName %> <%= roomNum %></b></span>
           <div class="stats">
             <span class="roomstats">$<%= price %><sub>/night</sub></span>
-            <span class="roomstats"><%= capacity %> people</span>
+            <span class="roomstats"><%= capacity %></span>
           </div>
         </div>
         <p class="room-location"><%= city %>, <%= province %>, <%= country %></p>
@@ -92,6 +96,8 @@ ResultSet rs = ps.executeQuery();
         <button onclick="window.location.href='../room_info.jsp?role=employee3&hotel_id=<%= hotelId %>&room_number=<%= roomNum %>'">View Info</button>
       </div>
     </div>
+  <% } %>
+  </div>
 
 </div>
 </body>

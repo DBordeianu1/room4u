@@ -89,16 +89,6 @@ window.location.href = "manager_addroom.jsp";
     <form method="post" action="manager_addroom.jsp">
 
         <fieldset>
-
-            <div id="date_filter">
-                <label><small>Hotel ID:</small></label>
-                <div class="search-bar">
-                    <input type="number" name="hotel_id" required>
-                </div>
-            </div>
-
-            <br>
-
             <div id="date_filter">
                 <label><small>Room Number:</small></label>
                 <div class="search-bar">
