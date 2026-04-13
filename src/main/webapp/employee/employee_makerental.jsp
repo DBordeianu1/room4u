@@ -7,7 +7,7 @@ DatabaseService db = new DatabaseService();
 DBConnection dbConnect = new DBConnection();
 Connection connection = dbConnect.getConnection();
 
-String loggedId = (String) session.getAttribute("id_number");
+String loggedId = (String) session.getAttribute("user_id");
 String loggedType = (String) session.getAttribute("id_type");
 
 String hotelId = request.getParameter("hotel_id");
@@ -83,6 +83,9 @@ if ("POST".equalsIgnoreCase(request.getMethod())) {
 <script>alert("Employees cannot submit their own rentals.");</script>
 <%
                 return;
+            }
+            if (!db.checkCustomer(Integer.parseInt(renterId), renterType)) {
+                db.addNewUser("CUSTOMER", Integer.parseInt(renterId), renterType, first, middle, last, Integer.parseInt(streetNum), streetName, city, province, postal, country, null);
             }
 
             finalPrice *= 0.5;
@@ -219,7 +222,7 @@ window.location.href = "employee_managerentals.jsp";
             <div id="date_filter">
                 <label><small>Renter ID:</small></label>
                 <div class="search-bar">
-                    <input type="number" name="renter_id" required>
+                    <input type="text" name="renter_id" required>
                 </div>
             </div>
 

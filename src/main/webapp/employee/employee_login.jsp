@@ -36,6 +36,7 @@ if (request.getMethod().equals("POST")) {
         else {
             int hotel_id = db.getHotelId(role.toUpperCase(), connection, Integer.parseInt(id), idType);
             session.setAttribute("user_id", id);
+            session.setAttribute("id_type", idType);
             session.setAttribute("hotel_id", hotel_id);
 
             if(role.equals("manager")){

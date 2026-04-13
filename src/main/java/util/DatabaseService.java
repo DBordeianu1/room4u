@@ -104,6 +104,25 @@ public class DatabaseService {
         }
     }
 
+    public boolean checkCustomer(int id_number, String id_type) throws SQLException {
+        try {
+            String sql = "SELECT 1 FROM customer WHERE id_number = ? AND id_type = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id_number);
+            ps.setString(2, id_type);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     //should work with the trigger now
     public void addNewUser(String role, int idNumber, String idType, String firstName, String middleName, String lastName, int streetNumber, String streetName, String city, String province, String postalCode, String country, Integer hotelId) throws SQLException {
 
