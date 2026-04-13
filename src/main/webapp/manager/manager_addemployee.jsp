@@ -53,14 +53,9 @@ if (request.getMethod().equals("POST")) {
                 return;
             }
             try {
-                    if (role.equals("MANAGER")){ //this is also what was breaking the thing on fruther inspection #iamalittlestupid!
-                        db.addNewUser(role, Integer.parseInt(id), idType, firstName, middleName, lastName, Integer.parseInt(streetNumber), streetName, city, province, postalCode, country, hotelId);
-                    }
-                    else{
-                        db.addNewUser("EMPLOYEE", Integer.parseInt(id), idType, firstName, middleName, lastName, Integer.parseInt(streetNumber), streetName, city, province, postalCode, country, null);
+                //no longer need to insert as null cause funciton takes care of that
+                db.addNewUser(role, Integer.parseInt(id), idType, firstName, middleName, lastName, Integer.parseInt(streetNumber), streetName, city, province, postalCode, country, hotelId);
 
-
-                    }
                 %>
                     <script>
                         alert("User added succesfully!");

@@ -157,6 +157,12 @@ public class DatabaseService {
                 employee.setInt(1, idNumber);
                 employee.setString(2, idType);
                 employee.executeUpdate();
+
+                String ps3 = "INSERT INTO works_at (id_number, id_type, hotel_id) VALUES (?, ?, ?)";
+                PreparedStatement worksat = connection.prepareStatement(ps3);
+                worksat.setInt(1, idNumber);
+                worksat.setString(2, idType);
+                worksat.setInt(3, hotelId);
             }
 
             //to store role
